@@ -46,9 +46,7 @@ func (com *httpserverComponent) Start(ctx context.Context) error {
 			return err
 		}
 	case <-time.After(1 * time.Second):
-		slog.LogAttrs(
-			ctx,
-			slog.LevelInfo-1,
+		slog.Info(
 			"http server started",
 			slog.String("addr", addr),
 		)
