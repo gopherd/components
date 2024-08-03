@@ -3,7 +3,7 @@ module github.com/gopherd/components/db
 go 1.22.4
 
 require (
-	github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9
+	github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.11
@@ -11,7 +11,6 @@ require (
 
 require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/gopherd/log v0.1.14 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect

@@ -1,9 +1,9 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33 h1:NMjqrW6TjFTGXZkbWAw9x4L6PaEdWWJ/ro6GwXsIBHI=
+github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
 github.com/gopherd/log v0.1.14 h1:1+P7H5uRwuq53FGqiq8EvjRnrT2+dd43ufMtP9j1Wbk=
 github.com/gopherd/log v0.1.14/go.mod h1:gmYpBUEA6VpJUvyariz0aU4gT3Oqvu94nk45vx8W6uQ=
-github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9 h1:LM56+QWJ8dUWP6ybcDlwAd2n0HSuIssJVAbi8TKfrv0=
-github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9/go.mod h1:m/QwRvhClk7aKK+wlMGYZ8RaXjVgBJAwXry8Hjr6GkA=
 github.com/labstack/echo/v4 v4.12.0 h1:IKpw49IMryVB2p1a4dzwlhP1O2Tf2E0Ir/450lH+kI0=
 github.com/labstack/echo/v4 v4.12.0/go.mod h1:UP9Cr2DJXbOK3Kr9ONYzNowSh7HP0aG0ShAyycHSJvM=
 github.com/labstack/gommon v0.4.2 h1:F8qTUNXgG1+6WQmqoUWnz8WiEU60mXVVw0P4ht1WRA0=

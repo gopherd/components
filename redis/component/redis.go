@@ -5,8 +5,7 @@ import (
 	"strings"
 
 	goredis "github.com/go-redis/redis/v8"
-	"github.com/gopherd/doge/erron"
-	"github.com/gopherd/mosaic/component"
+	"github.com/gopherd/core/component"
 	redisapi "github.com/gopherd/redis/api"
 
 	"github.com/gopherd/components/redis"
@@ -29,7 +28,7 @@ type redisComponent struct {
 
 func (com *redisComponent) Init(ctx context.Context, entity component.Entity) error {
 	if client, opt, err := redisapi.NewClient(com.Options().Source); err != nil {
-		return erron.Throw(err)
+		return err
 	} else {
 		com.client = client
 		com.prefix = opt.Prefix

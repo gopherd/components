@@ -6,12 +6,10 @@ github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWo
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
+github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33 h1:NMjqrW6TjFTGXZkbWAw9x4L6PaEdWWJ/ro6GwXsIBHI=
+github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
 github.com/gopherd/doge v0.3.7-0.20240802145150-279fdb921d48 h1:5KuIJBjRXqrXOts0P4u00M/CVQ2bjJb+Q7hxau6lz0k=
 github.com/gopherd/doge v0.3.7-0.20240802145150-279fdb921d48/go.mod h1:zamCZkdiHDTuPYd+6tFMoZiBObVBGV+aaxq1up90kJU=
-github.com/gopherd/log v0.1.14 h1:1+P7H5uRwuq53FGqiq8EvjRnrT2+dd43ufMtP9j1Wbk=
-github.com/gopherd/log v0.1.14/go.mod h1:gmYpBUEA6VpJUvyariz0aU4gT3Oqvu94nk45vx8W6uQ=
-github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9 h1:LM56+QWJ8dUWP6ybcDlwAd2n0HSuIssJVAbi8TKfrv0=
-github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9/go.mod h1:m/QwRvhClk7aKK+wlMGYZ8RaXjVgBJAwXry8Hjr6GkA=
 github.com/gopherd/redis v0.0.16 h1:xRon+c0DoEXZ1TnI28/xeh13uZnz9AXxTSriBnnU3UY=
 github.com/gopherd/redis v0.0.16/go.mod h1:IeqQaPPWR3ZI6B+gpVoCugMCyTsU21eEAqjk7SnOySk=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=

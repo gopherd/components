@@ -3,7 +3,7 @@ package component
 import (
 	"context"
 
-	"github.com/gopherd/mosaic/component"
+	"github.com/gopherd/core/component"
 	"gorm.io/gorm"
 
 	"github.com/gopherd/components/db"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/gopherd/core/component"
 	"github.com/gopherd/log"
-	"github.com/gopherd/mosaic/component"
 	"github.com/labstack/echo/v4"
 
 	"github.com/gopherd/components/httpserver"
