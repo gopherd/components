@@ -22,7 +22,7 @@ type dbComponent struct {
 	engine *gorm.DB
 }
 
-func (com *dbComponent) Init(ctx context.Context, entity component.Entity) error {
+func (com *dbComponent) Init(ctx context.Context) error {
 	options := com.Options()
 	if db, err := open(options.Driver, options.DSN); err != nil {
 		return err

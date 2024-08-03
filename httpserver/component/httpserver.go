@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gopherd/core/component"
-	"github.com/gopherd/log"
 	"github.com/labstack/echo/v4"
 
 	"github.com/gopherd/components/httpserver"
@@ -24,7 +23,7 @@ type httpserverComponent struct {
 	engine *echo.Echo
 }
 
-func (com *httpserverComponent) Init(ctx context.Context, entity component.Entity) error {
+func (com *httpserverComponent) Init(ctx context.Context) error {
 	com.engine = echo.New()
 	return nil
 }
@@ -38,14 +37,11 @@ func (com *httpserverComponent) Start(ctx context.Context) error {
 	select {
 	case err := <-errChan:
 		if err != nil {
-			log.Info().
-				String("addr", addr).
-				Error("err", err).
-				Print("failed to start http server")
+			com.Entity().Logger().Infof("failed to start http server %s: %v", addr, err)
 			return err
 		}
 	case <-time.After(1 * time.Second):
-		log.Info().String("addr", addr).Print("http server started")
+		com.Entity().Logger().Infof("http server started at %s", addr)
 	}
 	return nil
 }

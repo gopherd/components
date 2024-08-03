@@ -8,6 +8,8 @@ github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33 h1:NMjqrW6TjFTGXZkbWAw9x4L6PaEdWWJ/ro6GwXsIBHI=
 github.com/gopherd/core v0.0.0-20240803054048-53f073f7ab33/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
+github.com/gopherd/core v0.0.0-20240803062717-07ffc679ba70 h1:/BL/kLi9ZytdcnGwoW5tC9cNygERfPslvzB0DAC3o1A=
+github.com/gopherd/core v0.0.0-20240803062717-07ffc679ba70/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
 github.com/gopherd/doge v0.3.7-0.20240802145150-279fdb921d48 h1:5KuIJBjRXqrXOts0P4u00M/CVQ2bjJb+Q7hxau6lz0k=
 github.com/gopherd/doge v0.3.7-0.20240802145150-279fdb921d48/go.mod h1:zamCZkdiHDTuPYd+6tFMoZiBObVBGV+aaxq1up90kJU=
 github.com/gopherd/redis v0.0.16 h1:xRon+c0DoEXZ1TnI28/xeh13uZnz9AXxTSriBnnU3UY=

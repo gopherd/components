@@ -26,7 +26,7 @@ type redisComponent struct {
 	prefix string
 }
 
-func (com *redisComponent) Init(ctx context.Context, entity component.Entity) error {
+func (com *redisComponent) Init(ctx context.Context) error {
 	if client, opt, err := redisapi.NewClient(com.Options().Source); err != nil {
 		return err
 	} else {
