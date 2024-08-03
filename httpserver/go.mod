@@ -1,0 +1,21 @@
+module github.com/gopherd/components/httpserver
+
+go 1.22.4
+
+require (
+	github.com/gopherd/log v0.1.14
+	github.com/gopherd/mosaic v0.0.0-20240803042315-86f826cc28a9
+	github.com/labstack/echo/v4 v4.12.0
+)
+
+require (
+	github.com/labstack/gommon v0.4.2 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasttemplate v1.2.2 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+)
