@@ -2,6 +2,7 @@ go 1.22.4
 
 use (
 	./db
+	./blockexit
 	./httpserver
 	./redis
 )

@@ -3,7 +3,7 @@ module github.com/gopherd/components/httpserver
 go 1.22.4
 
 require (
-	github.com/gopherd/core v0.0.0-20240803062717-07ffc679ba70
+	github.com/gopherd/core v0.0.0-20240803134830-f7421dbe555f
 	github.com/labstack/echo/v4 v4.12.0
 )
 

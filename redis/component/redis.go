@@ -39,6 +39,10 @@ func (com *redisComponent) Init(ctx context.Context) error {
 	return nil
 }
 
+func (com *redisComponent) Uninit(ctx context.Context) error {
+	return com.client.Close()
+}
+
 func (com *redisComponent) Client() *goredis.Client {
 	return com.client
 }

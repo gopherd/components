@@ -35,7 +35,7 @@ func (com *dbComponent) Init(ctx context.Context) error {
 	return nil
 }
 
-func (com *dbComponent) Shutdown(ctx context.Context) error {
+func (com *dbComponent) Uninit(ctx context.Context) error {
 	if db, err := com.engine.DB(); err == nil {
 		return db.Close()
 	}

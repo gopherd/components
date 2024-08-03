@@ -2,6 +2,7 @@ package component
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/gopherd/core/component"
@@ -37,11 +38,20 @@ func (com *httpserverComponent) Start(ctx context.Context) error {
 	select {
 	case err := <-errChan:
 		if err != nil {
-			com.Entity().Logger().Infof("failed to start http server %s: %v", addr, err)
+			slog.Error(
+				"failed to start http server",
+				slog.String("addr", addr),
+				slog.Any("error", err),
+			)
 			return err
 		}
 	case <-time.After(1 * time.Second):
-		com.Entity().Logger().Infof("http server started at %s", addr)
+		slog.LogAttrs(
+			ctx,
+			slog.LevelInfo-1,
+			"http server started",
+			slog.String("addr", addr),
+		)
 	}
 	return nil
 }
