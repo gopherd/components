@@ -4,7 +4,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-const ComponentName = "redis"
+const ComponentName = "github.com/gopherd/components/redis"
 
 type Options struct {
 	Source string `json:"source"`
@@ -14,6 +14,6 @@ type Options struct {
 type Component interface {
 	// Client returns the redis client
 	Client() *redis.Client
-	// Key returns the key with prefix (or namespace)
+	// Key returns the key with prefix (aka namespace)
 	Key(key string) string
 }

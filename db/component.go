@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const ComponentName = "db"
+const ComponentName = "github.com/gopherd/components/db"
 
 type Options struct {
 	Driver string `json:"driver"`

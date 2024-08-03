@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const ComponentName = "httpserver"
+const ComponentName = "github.com/gopherd/components/httpserver"
 
 type Options struct {
 	Addr string `json:"addr"`

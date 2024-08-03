@@ -38,3 +38,11 @@ func (com *redisComponent) Init(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (com *redisComponent) Client() *goredis.Client {
+	return com.client
+}
+
+func (com *redisComponent) Key(key string) string {
+	return com.prefix + key
+}

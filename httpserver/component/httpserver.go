@@ -49,3 +49,7 @@ func (com *httpserverComponent) Start(ctx context.Context) error {
 func (com *httpserverComponent) Shutdown(ctx context.Context) error {
 	return com.engine.Shutdown(ctx)
 }
+
+func (com *httpserverComponent) Engine() *echo.Echo {
+	return com.engine
+}
