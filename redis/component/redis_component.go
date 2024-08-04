@@ -30,6 +30,9 @@ func (com *redisComponent) Init(ctx context.Context) error {
 	if client, opt, err := redisapi.NewClient(com.Options().Source); err != nil {
 		return err
 	} else {
+		if err := client.Ping(ctx).Err(); err != nil {
+			return err
+		}
 		com.client = client
 		com.prefix = opt.Prefix
 		if !strings.HasSuffix(com.prefix, ".") {

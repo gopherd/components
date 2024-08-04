@@ -6,8 +6,8 @@ github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWo
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
-github.com/gopherd/core v0.0.0-20240803144440-ab1db82c4e74 h1:WFDzn8S8BBzAoZqDCWiL1gTJxsUsdBzCmh1S4mWxYrk=
-github.com/gopherd/core v0.0.0-20240803144440-ab1db82c4e74/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
+github.com/gopherd/core v0.0.0-20240804060407-eb2365a577fb h1:DiX4fRQiL8Z99s6dRVr6aQQNnK7gIgN67KtrW6Nrw5o=
+github.com/gopherd/core v0.0.0-20240804060407-eb2365a577fb/go.mod h1:KfAPtxaKLEFiby8PpGwdgp86auCmLU82+khBzHhUTaM=
 github.com/gopherd/redis v0.0.17 h1:2ybdrVbATwRh6bmBguyyjsjCCw8B1t6vfwdWdXt83ko=
 github.com/gopherd/redis v0.0.17/go.mod h1:ChuCeUolr76MlTQ5ufE25kk/VceFA0l88iFwHvGyOBg=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
