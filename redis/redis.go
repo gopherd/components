@@ -4,8 +4,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-const ComponentName = "github.com/gopherd/components/redis"
+// Name represents the name of the component.
+const Name = "github.com/gopherd/components/redis"
 
+// Options represents the options of the component.
 type Options struct {
 	Source string `json:"source"`
 }

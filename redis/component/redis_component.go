@@ -14,7 +14,7 @@ import (
 var _ redis.Component = (*redisComponent)(nil)
 
 func init() {
-	component.Register(redis.ComponentName, func() component.Component {
+	component.Register(redis.Name, func() component.Component {
 		return &redisComponent{}
 	})
 }

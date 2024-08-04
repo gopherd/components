@@ -4,8 +4,10 @@ import (
 	"gorm.io/gorm"
 )
 
-const ComponentName = "github.com/gopherd/components/db"
+// Name represents the name of the component.
+const Name = "github.com/gopherd/components/db"
 
+// Options represents the options of the component.
 type Options struct {
 	Driver string `json:"driver"`
 	DSN    string `json:"dsn"`

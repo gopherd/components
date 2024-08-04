@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	component.Register(blockexit.ComponentName, func() component.Component {
+	component.Register(blockexit.Name, func() component.Component {
 		return &blockexitComponent{}
 	})
 }

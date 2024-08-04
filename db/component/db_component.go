@@ -15,7 +15,7 @@ import (
 var _ db.Component = (*dbComponent)(nil)
 
 func init() {
-	component.Register(db.ComponentName, func() component.Component {
+	component.Register(db.Name, func() component.Component {
 		return &dbComponent{}
 	})
 }

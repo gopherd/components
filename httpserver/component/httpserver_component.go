@@ -14,7 +14,7 @@ import (
 var _ httpserver.Component = (*httpserverComponent)(nil)
 
 func init() {
-	component.Register(httpserver.ComponentName, func() component.Component {
+	component.Register(httpserver.Name, func() component.Component {
 		return &httpserverComponent{}
 	})
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	component.Register(logger.ComponentName, func() component.Component {
+	component.Register(logger.Name, func() component.Component {
 		return &loggerComponent{}
 	})
 }
