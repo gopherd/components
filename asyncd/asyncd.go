@@ -8,7 +8,7 @@ import (
 	"github.com/gopherd/core/event"
 )
 
-// Name is the fully qualified package name.
+// Name represents the name of the component.
 const Name = "github.com/gopherd/components/asyncd"
 
 // Options represents the configuration options for the asyncd component.
