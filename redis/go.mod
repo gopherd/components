@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/gopherd/core v0.0.0-20240805105358-9f60b3cf6a8f
+	github.com/gopherd/core v0.0.0-20240805111725-2f7e8a4f73a8
 	github.com/gopherd/redis v0.0.17
 )
 
