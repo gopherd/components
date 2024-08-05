@@ -16,7 +16,7 @@ const Name = "github.com/gopherd/components/redis"
 
 // Options represents the options of the component.
 type Options struct {
-	Source string `json:"source"`
+	Source string
 }
 
 var _ api.Component = (*redisComponent)(nil)

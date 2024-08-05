@@ -16,8 +16,8 @@ const Name = "github.com/gopherd/components/db"
 
 // Options represents the options of the component.
 type Options struct {
-	Driver string `json:"driver"`
-	DSN    string `json:"dsn"`
+	Driver string
+	DSN    string
 }
 
 var _ dbapi.Component = (*dbComponent)(nil)

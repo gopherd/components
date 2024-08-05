@@ -16,7 +16,7 @@ const Name = "github.com/gopherd/components/httpserver"
 
 // Options represents the options of the component.
 type Options struct {
-	Addr string `json:"addr"`
+	Addr string
 }
 
 var _ httpserverapi.Component = (*httpserverComponent)(nil)

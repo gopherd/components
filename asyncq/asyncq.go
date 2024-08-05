@@ -23,11 +23,11 @@ const Name = "github.com/gopherd/components/asyncq"
 // Options represents the configuration options for the asyncq component.
 type Options struct {
 	// LockThread determines if the consumer goroutine should be bound to an OS thread.
-	LockThread bool `json:"lock_thread"`
+	LockThread bool
 
 	// MaxSize is the maximum number of requests allowed in the queue.
 	// Requests exceeding this limit will be discarded.
-	MaxSize int `json:"max_size"`
+	MaxSize int
 }
 
 // DefaultOptions returns the default configuration for the asyncq component.

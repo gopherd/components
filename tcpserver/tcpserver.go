@@ -14,11 +14,11 @@ const Name = "github.com/gopherd/components/tcpserver"
 
 // Options represents component-specific configuration options.
 type Options struct {
-	Network      string `json:"network"`
-	Addr         string `json:"addr"`
-	KeepAlive    int    `json:"keepalive"`
-	ReadTimeout  int    `json:"read_timeout"`
-	WriteTimeout int    `json:"write_timeout"`
+	Network      string
+	Addr         string
+	KeepAlive    int
+	ReadTimeout  int
+	WriteTimeout int
 }
 
 func DefaultOptions(modifier func(*Options)) Options {
