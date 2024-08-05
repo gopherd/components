@@ -1,4 +1,4 @@
-package asyncdapi
+package asyncqapi
 
 import (
 	"reflect"
@@ -6,7 +6,7 @@ import (
 	"github.com/gopherd/core/event"
 )
 
-// Component defines the interface for the asyncd component.
+// Component defines the interface for the asyncq component.
 type Component interface {
 	// On registers a listener for events in the component.
 	// It returns an event.ID that can be used to unregister the listener.

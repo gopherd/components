@@ -1,5 +1,5 @@
-// Package asyncd provides asynchronous event processing functionality.
-package asyncd
+// Package asyncq provides asynchronous event processing functionality.
+package asyncq
 
 import (
 	"context"
@@ -14,13 +14,13 @@ import (
 	"github.com/gopherd/core/event"
 	"github.com/gopherd/core/lifecycle"
 
-	asyncdapi "github.com/gopherd/components/asyncd/api"
+	asyncqapi "github.com/gopherd/components/asyncq/api"
 )
 
 // Name represents the name of the component.
-const Name = "github.com/gopherd/components/asyncd"
+const Name = "github.com/gopherd/components/asyncq"
 
-// Options represents the configuration options for the asyncd component.
+// Options represents the configuration options for the asyncq component.
 type Options struct {
 	// LockThread determines if the consumer goroutine should be bound to an OS thread.
 	LockThread bool `json:"lock_thread"`
@@ -30,7 +30,7 @@ type Options struct {
 	MaxSize int `json:"max_size"`
 }
 
-// DefaultOptions returns the default configuration for the asyncd component.
+// DefaultOptions returns the default configuration for the asyncq component.
 func DefaultOptions() Options {
 	return Options{
 		MaxSize: 1 << 20, // 1,048,576
@@ -39,26 +39,26 @@ func DefaultOptions() Options {
 
 func init() {
 	component.Register(Name, func() component.Component {
-		return &asyncdComponent{}
+		return &asyncqComponent{}
 	})
 }
 
 var (
-	// errFull is returned when the asyncd queue is at capacity.
-	errFull = errors.New("asyncd: queue is at capacity")
+	// errFull is returned when the asyncq queue is at capacity.
+	errFull = errors.New("asyncq: queue is at capacity")
 
 	// errNotRunning is returned when trying to send an event to a non-running component.
-	errNotRunning = errors.New("asyncd: component is not running")
+	errNotRunning = errors.New("asyncq: component is not running")
 )
 
 // Event is an exported alias for event.Event[reflect.Type].
 type Event = event.Event[reflect.Type]
 
-// Ensure asyncdComponent implements asyncd.Component interface.
-var _ asyncdapi.Component = (*asyncdComponent)(nil)
+// Ensure asyncqComponent implements asyncq.Component interface.
+var _ asyncqapi.Component = (*asyncqComponent)(nil)
 
-// asyncdComponent implements the asyncd.Component interface for handling asynchronous events.
-type asyncdComponent struct {
+// asyncqComponent implements the asyncq.Component interface for handling asynchronous events.
+type asyncqComponent struct {
 	component.BaseComponent[Options]
 	dispatcher event.Dispatcher[reflect.Type]
 
@@ -72,8 +72,8 @@ type asyncdComponent struct {
 	maxSizeEver int // Peak number of requests in the queue
 }
 
-// Init initializes the asyncd component.
-func (com *asyncdComponent) Init(ctx context.Context) error {
+// Init initializes the asyncq component.
+func (com *asyncqComponent) Init(ctx context.Context) error {
 	com.dispatcher = event.NewDispatcher[reflect.Type](true)
 	com.queue = newQueue(128)
 	com.status = int32(lifecycle.Running)
@@ -84,28 +84,28 @@ func (com *asyncdComponent) Init(ctx context.Context) error {
 	return nil
 }
 
-// Uninit shuts down the asyncd component.
-func (com *asyncdComponent) Uninit(ctx context.Context) error {
+// Uninit shuts down the asyncq component.
+func (com *asyncqComponent) Uninit(ctx context.Context) error {
 	if !atomic.CompareAndSwapInt32(&com.status, int32(lifecycle.Running), int32(lifecycle.Stopping)) {
 		slog.Error(
-			"asyncd component not running",
+			"asyncq component not running",
 			slog.String("uuid", com.UUID()),
 		)
 		return errNotRunning
 	}
 	close(com.quit)
 	com.cond.Signal()
-	slog.Info("asyncd component waiting for shutdown", slog.String("uuid", com.UUID()))
+	slog.Info("asyncq component waiting for shutdown", slog.String("uuid", com.UUID()))
 	<-com.wait
 	atomic.StoreInt32(&com.status, int32(lifecycle.Closed))
 	return nil
 }
 
 // run is the main loop for processing events.
-func (com *asyncdComponent) run() {
+func (com *asyncqComponent) run() {
 	options := com.Options()
 	slog.Info(
-		"asyncd component running",
+		"asyncq component running",
 		slog.String("uuid", com.UUID()),
 		slog.Bool("lockThread", options.LockThread),
 	)
@@ -132,9 +132,9 @@ func (com *asyncdComponent) run() {
 
 		select {
 		case <-com.quit:
-			slog.Info("asyncd component quitting", slog.String("uuid", com.UUID()))
+			slog.Info("asyncq component quitting", slog.String("uuid", com.UUID()))
 			com.clean()
-			slog.Info("asyncd component cleanup complete", slog.String("uuid", com.UUID()))
+			slog.Info("asyncq component cleanup complete", slog.String("uuid", com.UUID()))
 			close(com.wait)
 			return
 		default:
@@ -143,9 +143,9 @@ func (com *asyncdComponent) run() {
 }
 
 // clean processes remaining events in the queue during shutdown.
-func (com *asyncdComponent) clean() {
+func (com *asyncqComponent) clean() {
 	slog.Info(
-		"asyncd component cleaning up",
+		"asyncq component cleaning up",
 		slog.String("uuid", com.UUID()),
 	)
 	ctx := context.Background()
@@ -165,15 +165,15 @@ func (com *asyncdComponent) clean() {
 }
 
 // On adds an event listener to the component.
-func (com *asyncdComponent) On(listener event.Listener[reflect.Type]) event.ID {
+func (com *asyncqComponent) On(listener event.Listener[reflect.Type]) event.ID {
 	return com.dispatcher.AddListener(listener)
 }
 
 // Send sends an event to the component for processing.
-func (com *asyncdComponent) Send(e Event) error {
+func (com *asyncqComponent) Send(e Event) error {
 	if atomic.LoadInt32(&com.status) != int32(lifecycle.Running) {
 		slog.Error(
-			"asyncd component not running",
+			"asyncq component not running",
 			slog.String("uuid", com.UUID()),
 		)
 		return errNotRunning
@@ -212,7 +212,7 @@ func (com *asyncdComponent) Send(e Event) error {
 }
 
 // updateMaxSizeEver updates the peak number of requests in the queue.
-func (com *asyncdComponent) updateMaxSizeEver(size int) int {
+func (com *asyncqComponent) updateMaxSizeEver(size int) int {
 	maxSizeEver := com.maxSizeEver
 	if size > com.maxSizeEver || (size<<1) < com.maxSizeEver {
 		com.maxSizeEver = size

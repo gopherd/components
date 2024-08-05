@@ -1,4 +1,4 @@
-module github.com/gopherd/components/asyncd
+module github.com/gopherd/components/asyncq
 
 go 1.22.4
 

@@ -1,4 +1,4 @@
-package asyncd
+package asyncq
 
 import (
 	"github.com/gopherd/core/math/mathutil"
