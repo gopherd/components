@@ -1,14 +1,12 @@
-// Package component provides internal event handling functionality.
-package component
+package asyncd
 
 import (
-	"github.com/gopherd/components/asyncd"
 	"github.com/gopherd/core/math/mathutil"
 )
 
 // queue represents an internal event queue with circular buffer implementation.
 type queue struct {
-	buf []asyncd.Event
+	buf []Event
 	len int
 	cap int
 	pos int
@@ -20,7 +18,7 @@ type queue struct {
 func newQueue(cap int) *queue {
 	cap = int(mathutil.UpperPow2(cap))
 	return &queue{
-		buf: make([]asyncd.Event, cap),
+		buf: make([]Event, cap),
 		cap: cap,
 	}
 }
@@ -32,7 +30,7 @@ func (q *queue) size() int {
 
 // push adds an Event to the queue and returns the new size.
 // If the queue is full, it will expand automatically.
-func (q *queue) push(e asyncd.Event) int {
+func (q *queue) push(e Event) int {
 	if q.len == q.cap {
 		q.expand()
 	}
@@ -44,7 +42,7 @@ func (q *queue) push(e asyncd.Event) int {
 
 // pop removes and returns the oldest Event from the queue.
 // If the queue is empty, it returns nil.
-func (q *queue) pop() asyncd.Event {
+func (q *queue) pop() Event {
 	if q.len == 0 {
 		return nil
 	}
@@ -64,7 +62,7 @@ func (q *queue) index(n int) int {
 // expand doubles the capacity of the queue.
 func (q *queue) expand() {
 	oldCap := q.cap
-	newBuf := make([]asyncd.Event, oldCap*2)
+	newBuf := make([]Event, oldCap*2)
 
 	if q.cur > q.pos {
 		copy(newBuf, q.buf[q.pos:q.cur])

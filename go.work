@@ -1,9 +1,11 @@
 go 1.22.4
 
 use (
+	./asyncd
 	./blockexit
 	./db
 	./httpserver
 	./logger
 	./redis
+	./tcpserver
 )
