@@ -1,4 +1,4 @@
-module github.com/gopherd/components/logger
+module github.com/gopherd/components/pidfile
 
 go 1.22.4
 

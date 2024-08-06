@@ -9,10 +9,10 @@ import (
 	"github.com/gopherd/core/component"
 )
 
-// Name represents the component name.
+// Name is the unique identifier for the tcpserver component.
 const Name = "github.com/gopherd/components/tcpserver"
 
-// Options represents component-specific configuration options.
+// Options defines the configuration options for the tcpserver component.
 type Options struct {
 	Network      string
 	Addr         string

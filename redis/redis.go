@@ -7,13 +7,13 @@ import (
 	goredis "github.com/go-redis/redis/v8"
 	"github.com/gopherd/core/component"
 
-	api "github.com/gopherd/components/redis/api"
+	redisapi "github.com/gopherd/components/redis/api"
 )
 
-// Name represents the name of the component.
+// Name is the unique identifier for the redis component.
 const Name = "github.com/gopherd/components/redis"
 
-// Options represents the options of the component.
+// Options defines the configuration options for the redis component.
 type Options struct {
 	// The network type, either tcp or unix.
 	// Default is tcp.
@@ -84,7 +84,33 @@ type Options struct {
 	IdleCheckFrequency time.Duration
 }
 
-var _ api.Component = (*redisComponent)(nil)
+func DefaultOptions(modifier func(*Options)) Options {
+	options := Options{
+		Network:            "tcp",
+		Addr:               "localhost:6379",
+		DB:                 0,
+		MaxRetries:         3,
+		MinRetryBackoff:    8 * time.Millisecond,
+		MaxRetryBackoff:    512 * time.Millisecond,
+		DialTimeout:        5 * time.Second,
+		ReadTimeout:        3 * time.Second,
+		WriteTimeout:       0,
+		PoolFIFO:           true,
+		PoolSize:           10,
+		MinIdleConns:       0,
+		MaxConnAge:         0,
+		PoolTimeout:        0,
+		IdleTimeout:        5 * time.Minute,
+		IdleCheckFrequency: 1 * time.Minute,
+	}
+	if modifier != nil {
+		modifier(&options)
+	}
+	return options
+}
+
+// Ensure redisComponent implements redisapi.Component interface.
+var _ redisapi.Component = (*redisComponent)(nil)
 
 func init() {
 	component.Register(Name, func() component.Component {

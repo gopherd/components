@@ -10,7 +10,7 @@ import (
 type Component interface {
 	// On registers a listener for events in the component.
 	// It returns an event.ID that can be used to unregister the listener.
-	On(listener event.Listener[reflect.Type]) event.ID
+	On(listener event.Listener[reflect.Type]) event.ListenerID
 
 	// Send submits an event to the component for processing.
 	// It returns an error if the event cannot be sent.

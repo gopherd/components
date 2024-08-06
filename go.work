@@ -4,8 +4,11 @@ use (
 	./asyncq
 	./blockexit
 	./db
+	./eventide
 	./httpserver
 	./logger
+	./pidfile
 	./redis
 	./tcpserver
+	./timeflow
 )

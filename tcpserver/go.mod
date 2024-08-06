@@ -2,4 +2,4 @@ module github.com/gopherd/components/tcpserver
 
 go 1.22.4
 
-require github.com/gopherd/core v0.0.0-20240806063652-ac61ce14142b
+require github.com/gopherd/core v0.0.0-20240806122403-75c87503b2f9

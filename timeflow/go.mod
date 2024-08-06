@@ -1,4 +1,4 @@
-module github.com/gopherd/components/logger
+module github.com/gopherd/components/timeflow
 
 go 1.22.4
 

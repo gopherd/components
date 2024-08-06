@@ -11,14 +11,15 @@ import (
 	httpserverapi "github.com/gopherd/components/httpserver/api"
 )
 
-// Name represents the name of the component.
+// Name is the unique identifier for the httpserver component.
 const Name = "github.com/gopherd/components/httpserver"
 
-// Options represents the options of the component.
+// Options defines the configuration options for the httpserver component.
 type Options struct {
 	Addr string
 }
 
+// Ensure httpserverComponent implements httpserverapi.Component interface.
 var _ httpserverapi.Component = (*httpserverComponent)(nil)
 
 func init() {

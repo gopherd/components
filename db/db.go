@@ -1,3 +1,4 @@
+// Package db provides a database component implementation using GORM.
 package db
 
 import (
@@ -11,15 +12,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// Name represents the name of the component.
+// Name is the unique identifier for the database component.
 const Name = "github.com/gopherd/components/db"
 
-// Options represents the options of the component.
+// Options defines the configuration options for the db component.
 type Options struct {
-	Driver string
-	DSN    string
+	Driver string // Database driver name
+	DSN    string // Data Source Name for database connection
 }
 
+// Ensure dbComponent implements dbapi.Component interface.
 var _ dbapi.Component = (*dbComponent)(nil)
 
 func init() {
@@ -28,33 +30,42 @@ func init() {
 	})
 }
 
+// dbComponent implements the database component.
 type dbComponent struct {
 	component.BaseComponent[Options]
-	engine *gorm.DB
+	db *gorm.DB
 }
 
+// Init initializes the database component.
 func (com *dbComponent) Init(ctx context.Context) error {
-	options := com.Options()
-	if db, err := open(options.Driver, options.DSN); err != nil {
-		return err
-	} else {
-		com.engine = db
+	opts := com.Options()
+	db, err := openDB(opts.Driver, opts.DSN)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
 	}
+	com.db = db
 	return nil
 }
 
+// Uninit closes the database connection.
 func (com *dbComponent) Uninit(ctx context.Context) error {
-	if db, err := com.engine.DB(); err == nil {
-		return db.Close()
+	if com.db == nil {
+		return nil
 	}
-	return nil
+	sqlDB, err := com.db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get database connection: %w", err)
+	}
+	return sqlDB.Close()
 }
 
+// Engine returns the GORM database instance.
 func (com *dbComponent) Engine() *gorm.DB {
-	return com.engine
+	return com.db
 }
 
-func open(driverName string, dsn string) (*gorm.DB, error) {
+// openDB creates a new database connection based on the driver and DSN.
+func openDB(driverName, dsn string) (*gorm.DB, error) {
 	var dialector gorm.Dialector
 	switch driverName {
 	case "mysql":
@@ -62,13 +73,7 @@ func open(driverName string, dsn string) (*gorm.DB, error) {
 	case "postgres":
 		dialector = postgres.Open(dsn)
 	default:
-	}
-	if dialector == nil {
 		return nil, fmt.Errorf("unsupported database driver: %s", driverName)
 	}
-	db, err := gorm.Open(dialector, &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
+	return gorm.Open(dialector, &gorm.Config{})
 }

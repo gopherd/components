@@ -165,7 +165,7 @@ func (com *asyncqComponent) clean() {
 }
 
 // On adds an event listener to the component.
-func (com *asyncqComponent) On(listener event.Listener[reflect.Type]) event.ID {
+func (com *asyncqComponent) On(listener event.Listener[reflect.Type]) event.ListenerID {
 	return com.dispatcher.AddListener(listener)
 }
 

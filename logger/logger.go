@@ -2,33 +2,32 @@ package logger
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 
 	"github.com/gopherd/core/api/logging"
 	"github.com/gopherd/core/component"
-	"github.com/gopherd/core/operator"
+	"github.com/gopherd/core/raw"
 )
 
-// Name represents the name of the component.
+// Name is the unique identifier for the logger component.
 const Name = "github.com/gopherd/components/logger"
 
-// Options represents the options of the component.
+// Options defines the configuration options for the logger component.
 type Options struct {
 	// Name is the name of the log provider which is registered by log.Register.
 	Name string
 	// Options used to create the log provider.
-	Options json.RawMessage
+	Options raw.Object
 }
 
 // DefaultOptions returns the default options.
 func DefaultOptions(modifier func(*Options)) Options {
 	options := Options{
 		Name: "stderr",
-		Options: operator.First(json.Marshal(logging.StdOptions{
+		Options: raw.MustJSON(logging.StdOptions{
 			AddSource: true,
-		})),
+		}),
 	}
 	if modifier != nil {
 		modifier(&options)
@@ -52,7 +51,7 @@ func (com *loggerComponent) Init(ctx context.Context) error {
 	if f == nil {
 		return fmt.Errorf("unknown log provider: %s", com.Options().Name)
 	}
-	p, err := f(com.Options().Options)
+	p, err := f(com.Options().Options.Bytes())
 	if err != nil {
 		slog.Error("failed to create log provider", slog.Any("error", err))
 		return err
