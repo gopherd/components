@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/gopherd/core/api/logging"
 	"github.com/gopherd/core/component"
-	"github.com/gopherd/core/logging"
 	"github.com/gopherd/core/operator"
 )
 
