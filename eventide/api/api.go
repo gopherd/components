@@ -1,4 +1,4 @@
-package api
+package eventideapi
 
 import (
 	"context"
