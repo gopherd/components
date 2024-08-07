@@ -1,9 +1,8 @@
-// Package eventnexus provides a flexible event handling system.
-package eventnexus
+// Package eventide provides a flexible event handling system.
+package eventide
 
 import (
 	"context"
-	"log/slog"
 	"reflect"
 	"sync"
 
@@ -12,15 +11,16 @@ import (
 	"github.com/gopherd/core/event"
 )
 
-// Name is the unique identifier for the eventnexus component.
+// Name is the unique identifier for the eventide component.
 const Name = "github.com/gopherd/components/eventide"
 
-// Options defines the configuration options for the eventnexus component.
+// Options defines the configuration options for the eventide component.
 type Options struct {
-	Ordered bool // Determines if listeners should be invoked in order of registration
+	Ordered    bool // Determines if listeners should be invoked in order of registration
+	Concurrent bool // Determines if listeners should be invoked concurrently
 }
 
-// Ensure eventNexusComponent implements eventnexusapi.Component interface.
+// Ensure eventideComponent implements eventideapi.Component interface.
 var _ eventideapi.Component = (*eventideComponent)(nil)
 
 func init() {
@@ -40,33 +40,26 @@ func (com *eventideComponent) Init(ctx context.Context) error {
 	return nil
 }
 
-func (com *eventideComponent) Start(ctx context.Context) error {
-	slog.Info("EventNexus system started")
-	return nil
-}
-
-func (com *eventideComponent) Shutdown(ctx context.Context) error {
-	com.mu.Lock()
-	defer com.mu.Unlock()
-	com.dispatcher = nil
-	slog.Info("EventNexus system shut down")
-	return nil
-}
-
 func (com *eventideComponent) On(listener event.Listener[reflect.Type]) event.ListenerID {
-	com.mu.RLock()
-	defer com.mu.RUnlock()
+	if com.Options().Concurrent {
+		com.mu.Lock()
+		defer com.mu.Unlock()
+	}
 	return com.dispatcher.AddListener(listener)
 }
 
 func (com *eventideComponent) Off(id event.ListenerID) {
-	com.mu.RLock()
-	defer com.mu.RUnlock()
+	if com.Options().Concurrent {
+		com.mu.Lock()
+		defer com.mu.Unlock()
+	}
 	com.dispatcher.RemoveListener(id)
 }
 
 func (com *eventideComponent) Emit(ctx context.Context, event event.Event[reflect.Type]) error {
-	com.mu.RLock()
-	defer com.mu.RUnlock()
+	if com.Options().Concurrent {
+		com.mu.RLock()
+		defer com.mu.RUnlock()
+	}
 	return com.dispatcher.DispatchEvent(ctx, event)
 }
