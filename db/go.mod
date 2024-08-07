@@ -3,7 +3,7 @@ module github.com/gopherd/components/db
 go 1.22.4
 
 require (
-	github.com/gopherd/core v0.0.0-20240806174350-8197165b64bd
+	github.com/gopherd/core v0.0.0-20240807094829-863a3c6a0e9a
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.11
