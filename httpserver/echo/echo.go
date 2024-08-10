@@ -13,7 +13,7 @@ import (
 )
 
 // Name is the unique identifier for the httpserver component.
-const Name = "github.com/gopherd/components/httpeserver/echo"
+const Name = "github.com/gopherd/components/httpserver/echo"
 
 // Options defines the configuration options for the httpserver component.
 type Options struct {
