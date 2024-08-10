@@ -2,7 +2,6 @@ package tcpserver
 
 import (
 	"context"
-	"log/slog"
 	"net"
 	"time"
 
@@ -72,10 +71,7 @@ func (com *tcpserverComponent) listen() error {
 		if l, ok := com.listener.(*net.TCPListener); ok {
 			com.listener = newTCPKeepAliveListener(l, time.Duration(options.KeepAlive)*time.Second)
 		} else {
-			slog.Warn(
-				"tcpserver: keepalive is not supported",
-				slog.String("addr", options.Addr),
-			)
+			com.Logger().Warn("keepalive is not supported", "addr", options.Addr)
 		}
 	}
 	return nil

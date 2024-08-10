@@ -6,12 +6,20 @@ import (
 	"errors"
 	"io"
 	"log/slog"
+	"net/http"
 	"os"
+	"path"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 
 	"github.com/gopherd/core/component"
+	"github.com/gopherd/core/event"
+	"github.com/gopherd/core/operator"
+
+	httpapi "github.com/gopherd/components/httpserver/http/api"
+	loggerapi "github.com/gopherd/components/logger/api"
 )
 
 // Name is the unique identifier for the logger component.
@@ -32,7 +40,7 @@ type Options struct {
 	// JSON determines whether to output logs in JSON format.
 	JSON bool
 
-	// TimeFormat specifies the time pattern for log entries.
+	// TimeFormat specifies the time format for log entries.
 	// Supported values:
 	//   - "h": "2006-01-02 15:04:05" in local time
 	//   - "H": "2006-01-02 15:04:05.999999" in local time
@@ -60,23 +68,21 @@ type Options struct {
 	//   - "L": full word (DEBUG, INFO, WARN, ERROR)
 	//   - "": omit level
 	LevelFormat string
+
+	// HTTPPath specifies the root HTTP path to get/set log level.
+	// If empty, the HTTP handler is not registered.
+	//
+	// - get log level: GET {HTTPPath}/get
+	// - set log level: POST {HTTPPath}/set?level={level} where level is one of DEBUG, INFO, WARN, ERROR or a number
+	HTTPPath string
 }
 
-// DefaultOptions returns the default logger options.
-// The modifier function can be used to customize the default options.
-func DefaultOptions(modifier func(*Options)) Options {
-	options := Options{
-		Output:       "stderr",
-		Level:        slog.LevelInfo,
-		JSON:         false,
-		TimeFormat:   "H",
-		SourceFormat: "S",
-		LevelFormat:  "L",
-	}
-	if modifier != nil {
-		modifier(&options)
-	}
-	return options
+func (options *Options) setDefaults() {
+	operator.SetDefault(&options.Output, "stderr")
+	operator.SetDefault(&options.Level, slog.LevelInfo)
+	operator.SetDefault(&options.TimeFormat, "H")
+	operator.SetDefault(&options.SourceFormat, "S")
+	operator.SetDefault(&options.LevelFormat, "L")
 }
 
 func init() {
@@ -86,19 +92,25 @@ func init() {
 }
 
 type loggerComponent struct {
-	component.BaseComponent[Options]
+	component.BaseComponentWithRefs[Options, struct {
+		HTTPServer      component.OptionalReference[httpapi.Component]
+		EventDispatcher component.OptionalReference[event.Dispatcher[reflect.Type]]
+	}]
 	writer io.Writer
 	closer io.Closer
+	level  slog.LevelVar
 }
 
 // Init initializes the logger component.
 func (com *loggerComponent) Init(ctx context.Context) error {
+	com.Options().setDefaults()
 	if err := com.initWriter(); err != nil {
 		return err
 	}
+	com.level.Set(com.Options().Level)
 
 	opts := &slog.HandlerOptions{
-		Level:     com.Options().Level,
+		Level:     &com.level,
 		AddSource: com.Options().SourceFormat != "",
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if groups != nil {
@@ -125,11 +137,56 @@ func (com *loggerComponent) Init(ctx context.Context) error {
 	return nil
 }
 
-// Uninit cleans up resources used by the logger component.
+func (com *loggerComponent) Start(ctx context.Context) error {
+	if server := com.Refs().HTTPServer.Component(); server != nil {
+		if root := com.Options().HTTPPath; root != "" {
+			server.HandleFunc([]string{http.MethodGet}, path.Join(root, "/get"), com.handleGetLogLevel)
+			server.HandleFunc([]string{http.MethodPost}, path.Join(root, "/set"), com.handleSetLogLevel)
+		}
+	}
+	if dispatcher := com.Refs().EventDispatcher.Component(); dispatcher != nil {
+		dispatcher.AddListener(loggerapi.SetLevelEventListener(com.onSetLevelEvent))
+	}
+	return nil
+}
+
+// Uninit implements the component.Component interface.
 func (com *loggerComponent) Uninit(ctx context.Context) error {
 	if com.closer != nil {
 		return com.closer.Close()
 	}
+	return nil
+}
+
+// handleGetLogLevel handles the HTTP request to get log level.
+func (com *loggerComponent) handleGetLogLevel(w http.ResponseWriter, r *http.Request) {
+	level := com.level.Level()
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte(level.String()))
+}
+
+// handleSetLogLevel handles the HTTP request to set log level.
+func (com *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Request) {
+	level := r.URL.Query().Get("level")
+	if level == "" {
+		http.Error(w, "missing level", http.StatusBadRequest)
+		return
+	}
+	var l slog.Level
+	if err := l.UnmarshalText([]byte(level)); err != nil {
+		http.Error(w, "invalid level", http.StatusBadRequest)
+		return
+	}
+	com.level.Set(l)
+	com.Logger().Log(context.Background(), l, "set log level", "level", l)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte(l.String()))
+}
+
+// onSetLevelEvent handles the SetLevelEvent event to set log level.
+func (com *loggerComponent) onSetLevelEvent(ctx context.Context, e *loggerapi.SetLevelEvent) error {
+	com.level.Set(e.Level)
+	com.Logger().Log(context.Background(), e.Level, "set log level", "level", e.Level)
 	return nil
 }
 

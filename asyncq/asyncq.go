@@ -14,7 +14,7 @@ import (
 	"github.com/gopherd/core/event"
 	"github.com/gopherd/core/lifecycle"
 
-	asyncqapi "github.com/gopherd/components/asyncq/api"
+	eventideapi "github.com/gopherd/components/eventide/api"
 )
 
 // Name represents the name of the component.
@@ -55,7 +55,7 @@ var (
 type Event = event.Event[reflect.Type]
 
 // Ensure asyncqComponent implements asyncq.Component interface.
-var _ asyncqapi.Component = (*asyncqComponent)(nil)
+var _ eventideapi.Component = (*asyncqComponent)(nil)
 
 // asyncqComponent implements the asyncq.Component interface for handling asynchronous events.
 type asyncqComponent struct {
@@ -87,15 +87,12 @@ func (com *asyncqComponent) Init(ctx context.Context) error {
 // Uninit shuts down the asyncq component.
 func (com *asyncqComponent) Uninit(ctx context.Context) error {
 	if !atomic.CompareAndSwapInt32(&com.status, int32(lifecycle.Running), int32(lifecycle.Stopping)) {
-		slog.Error(
-			"asyncq component not running",
-			slog.String("uuid", com.UUID()),
-		)
+		com.Logger().Error("asyncq component not running")
 		return errNotRunning
 	}
 	close(com.quit)
 	com.cond.Signal()
-	slog.Info("asyncq component waiting for shutdown", slog.String("uuid", com.UUID()))
+	com.Logger().Info("asyncq component waiting for shutdown")
 	<-com.wait
 	atomic.StoreInt32(&com.status, int32(lifecycle.Closed))
 	return nil
@@ -104,11 +101,7 @@ func (com *asyncqComponent) Uninit(ctx context.Context) error {
 // run is the main loop for processing events.
 func (com *asyncqComponent) run() {
 	options := com.Options()
-	slog.Info(
-		"asyncq component running",
-		slog.String("uuid", com.UUID()),
-		slog.Bool("lockThread", options.LockThread),
-	)
+	com.Logger().Info("asyncq component running", "lockThread", options.LockThread)
 	if options.LockThread {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -132,9 +125,9 @@ func (com *asyncqComponent) run() {
 
 		select {
 		case <-com.quit:
-			slog.Info("asyncq component quitting", slog.String("uuid", com.UUID()))
+			com.Logger().Info("asyncq component quitting")
 			com.clean()
-			slog.Info("asyncq component cleanup complete", slog.String("uuid", com.UUID()))
+			com.Logger().Info("asyncq component cleanup complete")
 			close(com.wait)
 			return
 		default:
@@ -144,10 +137,7 @@ func (com *asyncqComponent) run() {
 
 // clean processes remaining events in the queue during shutdown.
 func (com *asyncqComponent) clean() {
-	slog.Info(
-		"asyncq component cleaning up",
-		slog.String("uuid", com.UUID()),
-	)
+	com.Logger().Info("asyncq component cleaning up")
 	ctx := context.Background()
 	for {
 		com.cond.L.Lock()
@@ -169,13 +159,15 @@ func (com *asyncqComponent) On(listener event.Listener[reflect.Type]) event.List
 	return com.dispatcher.AddListener(listener)
 }
 
-// Send sends an event to the component for processing.
-func (com *asyncqComponent) Send(e Event) error {
+// Off removes an event listener from the component.
+func (com *asyncqComponent) Off(id event.ListenerID) {
+	com.dispatcher.RemoveListener(id)
+}
+
+// Emit sends an event to the component for processing.
+func (com *asyncqComponent) Emit(_ context.Context, e Event) error {
 	if atomic.LoadInt32(&com.status) != int32(lifecycle.Running) {
-		slog.Error(
-			"asyncq component not running",
-			slog.String("uuid", com.UUID()),
-		)
+		com.Logger().Error("asyncq component not running")
 		return errNotRunning
 	}
 
@@ -184,9 +176,8 @@ func (com *asyncqComponent) Send(e Event) error {
 	size := com.queue.size()
 	if options.MaxSize > 0 && size >= options.MaxSize {
 		com.mutex.Unlock()
-		slog.Warn(
+		com.Logger().Warn(
 			"event discarded because the queue is full",
-			slog.String("uuid", com.UUID()),
 			slog.Int("maxSize", options.MaxSize),
 			slog.Any("event", e),
 		)
@@ -202,11 +193,7 @@ func (com *asyncqComponent) Send(e Event) error {
 	if size == 1 {
 		com.cond.Signal()
 	} else if size&warningSizeMask == 0 && size > oldMaxSizeEver {
-		slog.Warn(
-			"queue size reached new peak",
-			slog.String("uuid", com.UUID()),
-			slog.Int("size", size),
-		)
+		com.Logger().Warn("queue size reached new peak", "size", size)
 	}
 	return nil
 }

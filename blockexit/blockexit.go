@@ -4,7 +4,6 @@ package blockexit
 
 import (
 	"context"
-	"log/slog"
 	"os"
 	"os/signal"
 	"sync"
@@ -56,9 +55,9 @@ func (com *blockexitComponent) Start(ctx context.Context) error {
 		defer com.wg.Done()
 		select {
 		case sig := <-com.sigChan:
-			slog.Debug("Received signal", "signal", sig.String())
+			com.Logger().Info("Received signal", "signal", sig.String())
 		case <-ctx.Done():
-			slog.Debug("Context cancelled")
+			com.Logger().Info("Context cancelled")
 		}
 	}()
 	com.wg.Wait()

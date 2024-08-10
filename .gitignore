@@ -6,6 +6,5 @@
 .vscode/
 .idea/
 *.exe
-testdata/
 *.local
 *.out

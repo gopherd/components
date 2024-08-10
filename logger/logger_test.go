@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gopherd/core/component"
-	"github.com/gopherd/core/raw"
+	"github.com/gopherd/core/types"
 )
 
 type mockEntity struct{}
@@ -20,70 +20,25 @@ func (mockEntity) GetComponent(uuid string) component.Component {
 	return nil
 }
 
+func (mockEntity) Logger() *slog.Logger {
+	return slog.Default()
+}
+
 func mustNew(t *testing.T, name string, options Options) component.Component {
 	t.Helper()
-	creator := component.Lookup(name)
-	if creator == nil {
-		t.Fatalf("Failed to create component %q", name)
-	}
-	comp := creator()
-	if err := comp.Ctor(component.Config{
-		Name:    name,
-		Options: raw.MustJSON(options),
-	}); err != nil {
+	comp, err := component.Create(name)
+	if err != nil {
 		t.Fatalf("Failed to create component %q: %v", name, err)
+		return nil
 	}
-	if err := comp.OnMounted(mockEntity{}); err != nil {
-		t.Fatalf("Failed to mount component %q: %v", name, err)
+	if err := comp.Setup(mockEntity{}, component.Config{
+		Name:    name,
+		Options: types.MustJSON(options),
+	}); err != nil {
+		t.Fatalf("Failed to setup component %q: %v", name, err)
 	}
 
 	return comp
-}
-
-func TestDefaultOptions(t *testing.T) {
-	tests := []struct {
-		name     string
-		modifier func(*Options)
-		expected Options
-	}{
-		{
-			name:     "Default",
-			modifier: nil,
-			expected: Options{
-				Output:       "stderr",
-				Level:        slog.LevelInfo,
-				JSON:         false,
-				TimeFormat:   "H",
-				SourceFormat: "S",
-				LevelFormat:  "L",
-			},
-		},
-		{
-			name: "Modified",
-			modifier: func(o *Options) {
-				o.Output = "stdout"
-				o.Level = slog.LevelDebug
-				o.JSON = true
-			},
-			expected: Options{
-				Output:       "stdout",
-				Level:        slog.LevelDebug,
-				JSON:         true,
-				TimeFormat:   "H",
-				SourceFormat: "S",
-				LevelFormat:  "L",
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := DefaultOptions(tt.modifier)
-			if got != tt.expected {
-				t.Errorf("DefaultOptions() = %v, want %v", got, tt.expected)
-			}
-		})
-	}
 }
 
 func TestLoggerComponentInit(t *testing.T) {
