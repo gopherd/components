@@ -168,7 +168,7 @@ func (com *loggerComponent) Uninit(ctx context.Context) error {
 func (com *loggerComponent) handleGetLogLevel(w http.ResponseWriter, r *http.Request) {
 	level := com.level.Level()
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(level.String()))
+	w.Write([]byte(level.String() + "\n"))
 }
 
 // handleSetLogLevel handles the HTTP request to set log level.
@@ -186,7 +186,7 @@ func (com *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Req
 	com.level.Set(l)
 	com.Logger().Log(context.Background(), l, "set log level", "level", l)
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(l.String()))
+	w.Write([]byte(l.String() + "\n"))
 }
 
 // onSetLevelEvent handles the SetLevelEvent event to set log level.
