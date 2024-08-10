@@ -140,11 +140,17 @@ func (com *loggerComponent) Init(ctx context.Context) error {
 func (com *loggerComponent) Start(ctx context.Context) error {
 	if server := com.Refs().HTTPServer.Component(); server != nil {
 		if root := com.Options().HTTPPath; root != "" {
+			com.Logger().Info(
+				"register HTTP handler",
+				"get", path.Join(root, "/get"),
+				"set", path.Join(root, "/set"),
+			)
 			server.HandleFunc([]string{http.MethodGet}, path.Join(root, "/get"), com.handleGetLogLevel)
 			server.HandleFunc([]string{http.MethodPost}, path.Join(root, "/set"), com.handleSetLogLevel)
 		}
 	}
 	if dispatcher := com.Refs().EventDispatcher.Component(); dispatcher != nil {
+		com.Logger().Info("register event listener")
 		dispatcher.AddListener(loggerapi.SetLevelEventListener(com.onSetLevelEvent))
 	}
 	return nil
