@@ -16,7 +16,7 @@ const Name = "github.com/gopherd/components/pidfile"
 
 // Options defines the configuration options for the pidfile component.
 type Options struct {
-	Filename string
+	Filename string // Filename is the path to the pid file.
 }
 
 func init() {
@@ -33,7 +33,7 @@ type pidfileComponent struct {
 func (com *pidfileComponent) Init(ctx context.Context) error {
 	filename := com.Options().Filename
 	if filename == "" {
-		filename = "/var/run/" + filepath.Base(os.Args[0]) + ".pid"
+		return nil
 	}
 	com.filename = filename
 	if err := com.createFile(); err != nil {
@@ -63,10 +63,18 @@ func (com *pidfileComponent) createFile() error {
 			return fmt.Errorf("pid file found, ensoure %s is not running", os.Args[0])
 		}
 	}
-	if err := os.WriteFile(com.filename, []byte(fmt.Sprintf("%d", os.Getpid())), 0644); err != nil {
+	f, err := os.OpenFile(com.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
 		return err
 	}
-	return nil
+	_, err = fmt.Fprintf(f, "%d", os.Getpid())
+	if err == nil {
+		err = f.Chmod(0444)
+	}
+	if err1 := f.Close(); err1 != nil && err == nil {
+		err = err1
+	}
+	return err
 }
 
 func (com *pidfileComponent) Uninit(ctx context.Context) error {
@@ -76,6 +84,9 @@ func (com *pidfileComponent) Uninit(ctx context.Context) error {
 // removeFile removes the pid file.
 func (com *pidfileComponent) removeFile() error {
 	if com.filename != "" {
+		if err := os.Chmod(com.filename, 0644); err != nil {
+			return err
+		}
 		return os.Remove(com.filename)
 	}
 	return nil
