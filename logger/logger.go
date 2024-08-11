@@ -16,7 +16,7 @@ import (
 
 	"github.com/gopherd/core/component"
 	"github.com/gopherd/core/event"
-	"github.com/gopherd/core/operator"
+	"github.com/gopherd/core/op"
 
 	httpapi "github.com/gopherd/components/httpserver/http/api"
 	loggerapi "github.com/gopherd/components/logger/api"
@@ -78,11 +78,11 @@ type Options struct {
 }
 
 func (options *Options) setDefaults() {
-	operator.SetDefault(&options.Output, "stderr")
-	operator.SetDefault(&options.Level, slog.LevelInfo)
-	operator.SetDefault(&options.TimeFormat, "H")
-	operator.SetDefault(&options.SourceFormat, "S")
-	operator.SetDefault(&options.LevelFormat, "L")
+	op.SetOr(&options.Output, "stderr")
+	op.SetOr(&options.Level, slog.LevelInfo)
+	op.SetOr(&options.TimeFormat, "H")
+	op.SetOr(&options.SourceFormat, "S")
+	op.SetOr(&options.LevelFormat, "L")
 }
 
 func init() {

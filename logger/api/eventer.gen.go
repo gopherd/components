@@ -3,8 +3,8 @@
 package loggerapi
 
 import (
-	"reflect"
 	"context"
+	"reflect"
 
 	"github.com/gopherd/core/event"
 )
@@ -14,6 +14,10 @@ var SetLevelEventType = reflect.TypeOf((*SetLevelEvent)(nil))
 
 func (*SetLevelEvent) Typeof() reflect.Type {
 	return SetLevelEventType
+}
+
+func init() {
+	event.Register(new(SetLevelEvent))
 }
 
 func SetLevelEventListener(h func(context.Context, *SetLevelEvent) error) event.Listener[reflect.Type] {

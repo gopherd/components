@@ -13,8 +13,7 @@ import (
 	"github.com/gopherd/core/component"
 	"github.com/gopherd/core/event"
 	"github.com/gopherd/core/lifecycle"
-
-	eventideapi "github.com/gopherd/components/eventide/api"
+	"github.com/gopherd/core/op"
 )
 
 // Name represents the name of the component.
@@ -30,11 +29,9 @@ type Options struct {
 	MaxSize int
 }
 
-// DefaultOptions returns the default configuration for the asyncq component.
-func DefaultOptions() Options {
-	return Options{
-		MaxSize: 1 << 20, // 1,048,576
-	}
+func (o *Options) OnLoaded() error {
+	op.SetOr(&o.MaxSize, 1<<20)
+	return nil
 }
 
 func init() {
@@ -51,11 +48,8 @@ var (
 	errNotRunning = errors.New("asyncq: component is not running")
 )
 
-// Event is an exported alias for event.Event[reflect.Type].
-type Event = event.Event[reflect.Type]
-
 // Ensure asyncqComponent implements asyncq.Component interface.
-var _ eventideapi.Component = (*asyncqComponent)(nil)
+var _ event.Dispatcher[reflect.Type] = (*asyncqComponent)(nil)
 
 // asyncqComponent implements the asyncq.Component interface for handling asynchronous events.
 type asyncqComponent struct {
@@ -154,18 +148,23 @@ func (com *asyncqComponent) clean() {
 	}
 }
 
-// On adds an event listener to the component.
-func (com *asyncqComponent) On(listener event.Listener[reflect.Type]) event.ListenerID {
+// AddListener implements the event.Dispatcher interface.
+func (com *asyncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
 	return com.dispatcher.AddListener(listener)
 }
 
-// Off removes an event listener from the component.
-func (com *asyncqComponent) Off(id event.ListenerID) {
-	com.dispatcher.RemoveListener(id)
+// RemoveListener implements the event.Dispatcher interface.
+func (com *asyncqComponent) RemoveListener(id event.ListenerID) bool {
+	return com.dispatcher.RemoveListener(id)
 }
 
-// Emit sends an event to the component for processing.
-func (com *asyncqComponent) Emit(_ context.Context, e Event) error {
+// HasListener implements the event.Dispatcher interface.
+func (com *asyncqComponent) HasListener(id event.ListenerID) bool {
+	return com.dispatcher.HasListener(id)
+}
+
+// DispatchEvent implements the event.Dispatcher interface.
+func (com *asyncqComponent) DispatchEvent(ctx context.Context, e event.Event[reflect.Type]) error {
 	if atomic.LoadInt32(&com.status) != int32(lifecycle.Running) {
 		com.Logger().Error("asyncq component not running")
 		return errNotRunning
