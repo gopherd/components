@@ -165,7 +165,7 @@ func (c *loggerComponent) handleGetLogLevel(w http.ResponseWriter, r *http.Reque
 
 // handleSetLogLevel handles the HTTP request to set log level.
 func (c *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Request) {
-	level := r.URL.Query().Get("level")
+	level := r.FormValue("level")
 	if level == "" {
 		http.Error(w, "missing level", http.StatusBadRequest)
 		return
