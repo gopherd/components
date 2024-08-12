@@ -44,12 +44,12 @@ type tcpserverComponent struct {
 	listener net.Listener
 }
 
-func (com *tcpserverComponent) Start(ctx context.Context) error {
+func (c *tcpserverComponent) Start(ctx context.Context) error {
 	// listen and serve
-	if err := com.listen(); err != nil {
+	if err := c.listen(); err != nil {
 		return err
 	}
-	go com.serve()
+	go c.serve()
 	return nil
 }
 
@@ -58,20 +58,20 @@ func (server *tcpserverComponent) Shutdown(ctx context.Context) error {
 }
 
 // listen creates a tcp server
-func (com *tcpserverComponent) listen() error {
-	options := com.Options()
+func (c *tcpserverComponent) listen() error {
+	options := c.Options()
 	a, err := net.ResolveTCPAddr("tcp", options.Addr)
 	if err == nil {
-		com.listener, err = net.ListenTCP("tcp", a)
+		c.listener, err = net.ListenTCP("tcp", a)
 	}
 	if err != nil {
 		return err
 	}
 	if options.KeepAlive > 0 {
-		if l, ok := com.listener.(*net.TCPListener); ok {
-			com.listener = newTCPKeepAliveListener(l, time.Duration(options.KeepAlive)*time.Second)
+		if l, ok := c.listener.(*net.TCPListener); ok {
+			c.listener = newTCPKeepAliveListener(l, time.Duration(options.KeepAlive)*time.Second)
 		} else {
-			com.Logger().Warn("keepalive is not supported", "addr", options.Addr)
+			c.Logger().Warn("keepalive is not supported", "addr", options.Addr)
 		}
 	}
 	return nil

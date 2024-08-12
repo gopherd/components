@@ -4,14 +4,23 @@ import (
 	"context"
 	"time"
 
-	goredis "github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v8"
 	"github.com/gopherd/core/component"
 
-	redisapi "github.com/gopherd/components/redis/api"
+	"github.com/gopherd/components/redis/redisapi"
 )
 
 // Name is the unique identifier for the redis component.
 const Name = "github.com/gopherd/components/redis"
+
+func init() {
+	component.Register(Name, func() component.Component {
+		return &redisComponent{}
+	})
+}
+
+// Ensure redisComponent implements redisapi.Component interface.
+var _ redisapi.Component = (*redisComponent)(nil)
 
 // Options defines the configuration options for the redis component.
 type Options struct {
@@ -84,49 +93,15 @@ type Options struct {
 	IdleCheckFrequency time.Duration
 }
 
-func DefaultOptions(modifier func(*Options)) Options {
-	options := Options{
-		Network:            "tcp",
-		Addr:               "localhost:6379",
-		DB:                 0,
-		MaxRetries:         3,
-		MinRetryBackoff:    8 * time.Millisecond,
-		MaxRetryBackoff:    512 * time.Millisecond,
-		DialTimeout:        5 * time.Second,
-		ReadTimeout:        3 * time.Second,
-		WriteTimeout:       0,
-		PoolFIFO:           true,
-		PoolSize:           10,
-		MinIdleConns:       0,
-		MaxConnAge:         0,
-		PoolTimeout:        0,
-		IdleTimeout:        5 * time.Minute,
-		IdleCheckFrequency: 1 * time.Minute,
-	}
-	if modifier != nil {
-		modifier(&options)
-	}
-	return options
-}
-
-// Ensure redisComponent implements redisapi.Component interface.
-var _ redisapi.Component = (*redisComponent)(nil)
-
-func init() {
-	component.Register(Name, func() component.Component {
-		return &redisComponent{}
-	})
-}
-
 type redisComponent struct {
 	component.BaseComponent[Options]
 
-	client *goredis.Client
+	client *redis.Client
 }
 
-func (com *redisComponent) Init(ctx context.Context) error {
-	options := com.Options()
-	client := goredis.NewClient(&goredis.Options{
+func (c *redisComponent) Init(ctx context.Context) error {
+	options := c.Options()
+	client := redis.NewClient(&redis.Options{
 		Network:            options.Network,
 		Addr:               options.Addr,
 		Username:           options.Username,
@@ -149,14 +124,14 @@ func (com *redisComponent) Init(ctx context.Context) error {
 	if err := client.Ping(ctx).Err(); err != nil {
 		return err
 	}
-	com.client = client
+	c.client = client
 	return nil
 }
 
-func (com *redisComponent) Uninit(ctx context.Context) error {
-	return com.client.Close()
+func (c *redisComponent) Uninit(ctx context.Context) error {
+	return c.client.Close()
 }
 
-func (com *redisComponent) Client() *goredis.Client {
-	return com.client
+func (c *redisComponent) Client() *redis.Client {
+	return c.client
 }

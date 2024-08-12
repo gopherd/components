@@ -1,4 +1,4 @@
-package echohttpserver
+package gin
 
 import (
 	"cmp"
@@ -9,25 +9,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gopherd/core/component"
 
-	ginapi "github.com/gopherd/components/httpserver/gin/api"
+	"github.com/gopherd/components/httpserver/gin/ginapi"
 )
 
 // Name is the unique identifier for the httpserver component.
 const Name = "github.com/gopherd/components/httpserver/gin"
 
-// Options defines the configuration options for the httpserver component.
-type Options struct {
-	Addr  string // Addr is the address to listen on.
-	Block bool   // Block indicates whether the Start method should block.
+func init() {
+	component.Register(Name, func() component.Component {
+		return &ginComponent{}
+	})
 }
 
 // Ensure httpserverComponent implements httpserverapi.Component interface.
 var _ ginapi.Component = (*ginComponent)(nil)
 
-func init() {
-	component.Register(Name, func() component.Component {
-		return &ginComponent{}
-	})
+// Options defines the configuration options for the httpserver component.
+type Options struct {
+	Addr  string // Addr is the address to listen on.
+	Block bool   // Block indicates whether the Start method should block.
 }
 
 type ginComponent struct {
@@ -36,51 +36,51 @@ type ginComponent struct {
 	server *http.Server
 }
 
-func (com *ginComponent) Init(ctx context.Context) error {
-	com.engine = gin.Default()
+func (c *ginComponent) Init(ctx context.Context) error {
+	c.engine = gin.Default()
 	return nil
 }
 
-func (com *ginComponent) Start(ctx context.Context) error {
-	addr := cmp.Or(com.Options().Addr, ":http")
+func (c *ginComponent) Start(ctx context.Context) error {
+	addr := cmp.Or(c.Options().Addr, ":http")
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-	com.server = &http.Server{
+	c.server = &http.Server{
 		Addr:    addr,
-		Handler: com.engine,
+		Handler: c.engine,
 	}
-	if com.Options().Block {
-		com.Logger().Info("http server started", "addr", addr)
-		return com.server.Serve(ln)
+	if c.Options().Block {
+		c.Logger().Info("http server started", "addr", addr)
+		return c.server.Serve(ln)
 	}
 	go func() {
-		com.Logger().Info("http server started", "addr", addr)
-		com.server.Serve(ln)
+		c.Logger().Info("http server started", "addr", addr)
+		c.server.Serve(ln)
 	}()
 	return nil
 }
 
-func (com *ginComponent) Shutdown(ctx context.Context) error {
-	if com.server == nil {
-		return com.server.Shutdown(ctx)
+func (c *ginComponent) Shutdown(ctx context.Context) error {
+	if c.server == nil {
+		return c.server.Shutdown(ctx)
 	}
 	return nil
 }
 
-func (com *ginComponent) Handle(methods []string, path string, h http.Handler) {
+func (c *ginComponent) Handle(methods []string, path string, h http.Handler) {
 	if len(methods) > 0 {
-		com.engine.Match(methods, path, gin.WrapH(h))
+		c.engine.Match(methods, path, gin.WrapH(h))
 	} else {
-		com.engine.Any(path, gin.WrapH(h))
+		c.engine.Any(path, gin.WrapH(h))
 	}
 }
 
-func (com *ginComponent) HandleFunc(methods []string, path string, h http.HandlerFunc) {
-	com.Handle(methods, path, h)
+func (c *ginComponent) HandleFunc(methods []string, path string, h http.HandlerFunc) {
+	c.Handle(methods, path, h)
 }
 
-func (com *ginComponent) Engine() *gin.Engine {
-	return com.engine
+func (c *ginComponent) Engine() *gin.Engine {
+	return c.engine
 }

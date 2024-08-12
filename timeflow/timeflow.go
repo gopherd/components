@@ -6,25 +6,26 @@ import (
 	"sync/atomic"
 	"time"
 
-	timeflowapi "github.com/gopherd/components/timeflow/api"
 	"github.com/gopherd/core/component"
+
+	"github.com/gopherd/components/timeflow/timeflowapi"
 )
 
 // Name is the unique identifier for the timeflow component.
 const Name = "github.com/gopherd/components/timeflow"
 
-// Options defines the configuration options for the timeflow component.
-type Options struct {
-	InitialOffset time.Duration
+func init() {
+	component.Register(Name, func() component.Component {
+		return &timeflowComponent{}
+	})
 }
 
 // Ensure timeflowComponent implements timeflowapi.Component interface.
 var _ timeflowapi.Component = (*timeflowComponent)(nil)
 
-func init() {
-	component.Register(Name, func() component.Component {
-		return &timeflowComponent{}
-	})
+// Options defines the configuration options for the timeflow component.
+type Options struct {
+	InitialOffset time.Duration
 }
 
 // timeflowComponent implements the timeflow functionality.

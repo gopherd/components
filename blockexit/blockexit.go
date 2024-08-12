@@ -34,32 +34,32 @@ type blockexitComponent struct {
 }
 
 // Init initializes the blockexitComponent.
-func (com *blockexitComponent) Init(ctx context.Context) error {
-	com.signals = []os.Signal{os.Interrupt}
-	com.sigChan = make(chan os.Signal, 1)
+func (c *blockexitComponent) Init(ctx context.Context) error {
+	c.signals = []os.Signal{os.Interrupt}
+	c.sigChan = make(chan os.Signal, 1)
 	return nil
 }
 
 // Uninit performs cleanup for the blockexitComponent.
-func (com *blockexitComponent) Uninit(ctx context.Context) error {
-	close(com.sigChan)
+func (c *blockexitComponent) Uninit(ctx context.Context) error {
+	close(c.sigChan)
 	return nil
 }
 
 // Start begins listening for signals and blocks until a signal is received
 // or the context is cancelled.
-func (com *blockexitComponent) Start(ctx context.Context) error {
-	signal.Notify(com.sigChan, com.signals...)
-	com.wg.Add(1)
+func (c *blockexitComponent) Start(ctx context.Context) error {
+	signal.Notify(c.sigChan, c.signals...)
+	c.wg.Add(1)
 	go func() {
-		defer com.wg.Done()
+		defer c.wg.Done()
 		select {
-		case sig := <-com.sigChan:
-			com.Logger().Info("Received signal", "signal", sig.String())
+		case sig := <-c.sigChan:
+			c.Logger().Info("Received signal", "signal", sig.String())
 		case <-ctx.Done():
-			com.Logger().Info("Context cancelled")
+			c.Logger().Info("Context cancelled")
 		}
 	}()
-	com.wg.Wait()
+	c.wg.Wait()
 	return nil
 }

@@ -1,4 +1,4 @@
-package httpserver
+package http
 
 import (
 	"cmp"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/gopherd/core/component"
 
-	httpapi "github.com/gopherd/components/httpserver/http/api"
+	"github.com/gopherd/components/httpserver/http/httpapi"
 )
 
 // Name is the unique identifier for the HTTPServerComponent.
@@ -35,45 +35,45 @@ type httpServerComponent struct {
 }
 
 // Init implements the component.Component interface.
-func (com *httpServerComponent) Init(ctx context.Context) error {
-	if com.Options().NewMux {
-		com.mux = http.NewServeMux()
+func (c *httpServerComponent) Init(ctx context.Context) error {
+	if c.Options().NewMux {
+		c.mux = http.NewServeMux()
 	} else {
-		com.mux = http.DefaultServeMux
+		c.mux = http.DefaultServeMux
 	}
 	return nil
 }
 
 // Start implements the component.Component interface.
-func (com *httpServerComponent) Start(ctx context.Context) error {
-	addr := cmp.Or(com.Options().Addr, ":http")
+func (c *httpServerComponent) Start(ctx context.Context) error {
+	addr := cmp.Or(c.Options().Addr, ":http")
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-	com.server = &http.Server{Addr: addr, Handler: com.mux}
-	if com.Options().Block {
-		com.Logger().Info("http server started", "addr", addr)
-		return com.server.Serve(ln)
+	c.server = &http.Server{Addr: addr, Handler: c.mux}
+	if c.Options().Block {
+		c.Logger().Info("http server started", "addr", addr)
+		return c.server.Serve(ln)
 	}
 	go func() {
-		com.Logger().Info("http server started", "addr", addr)
-		com.server.Serve(ln)
+		c.Logger().Info("http server started", "addr", addr)
+		c.server.Serve(ln)
 	}()
 	return nil
 }
 
 // Shutdown implements the component.Component interface.
-func (com *httpServerComponent) Shutdown(ctx context.Context) error {
-	if com.server != nil {
-		return com.server.Shutdown(ctx)
+func (c *httpServerComponent) Shutdown(ctx context.Context) error {
+	if c.server != nil {
+		return c.server.Shutdown(ctx)
 	}
 	return nil
 }
 
 // Handle implements the HTTPServerComponent interface.
-func (com *httpServerComponent) Handle(methods []string, path string, handler http.Handler) {
-	com.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+func (c *httpServerComponent) Handle(methods []string, path string, handler http.Handler) {
+	c.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		if len(methods) == 0 {
 			handler.ServeHTTP(w, r)
 			return
@@ -89,6 +89,6 @@ func (com *httpServerComponent) Handle(methods []string, path string, handler ht
 }
 
 // HandleFunc implements the HTTPServerComponent interface.
-func (com *httpServerComponent) HandleFunc(methods []string, path string, handler http.HandlerFunc) {
-	com.Handle(methods, path, handler)
+func (c *httpServerComponent) HandleFunc(methods []string, path string, handler http.HandlerFunc) {
+	c.Handle(methods, path, handler)
 }

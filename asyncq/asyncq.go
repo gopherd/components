@@ -67,62 +67,62 @@ type asyncqComponent struct {
 }
 
 // Init initializes the asyncq component.
-func (com *asyncqComponent) Init(ctx context.Context) error {
-	com.dispatcher = event.NewDispatcher[reflect.Type](true)
-	com.queue = newQueue(128)
-	com.status = int32(lifecycle.Running)
-	com.quit = make(chan struct{})
-	com.wait = make(chan struct{})
-	com.cond = sync.NewCond(&com.mutex)
-	go com.run()
+func (c *asyncqComponent) Init(ctx context.Context) error {
+	c.dispatcher = event.NewDispatcher[reflect.Type](true)
+	c.queue = newQueue(128)
+	c.status = int32(lifecycle.Running)
+	c.quit = make(chan struct{})
+	c.wait = make(chan struct{})
+	c.cond = sync.NewCond(&c.mutex)
+	go c.run()
 	return nil
 }
 
 // Uninit shuts down the asyncq component.
-func (com *asyncqComponent) Uninit(ctx context.Context) error {
-	if !atomic.CompareAndSwapInt32(&com.status, int32(lifecycle.Running), int32(lifecycle.Stopping)) {
-		com.Logger().Error("asyncq component not running")
+func (c *asyncqComponent) Uninit(ctx context.Context) error {
+	if !atomic.CompareAndSwapInt32(&c.status, int32(lifecycle.Running), int32(lifecycle.Stopping)) {
+		c.Logger().Error("asyncq component not running")
 		return errNotRunning
 	}
-	close(com.quit)
-	com.cond.Signal()
-	com.Logger().Info("asyncq component waiting for shutdown")
-	<-com.wait
-	atomic.StoreInt32(&com.status, int32(lifecycle.Closed))
+	close(c.quit)
+	c.cond.Signal()
+	c.Logger().Info("asyncq component waiting for shutdown")
+	<-c.wait
+	atomic.StoreInt32(&c.status, int32(lifecycle.Closed))
 	return nil
 }
 
 // run is the main loop for processing events.
-func (com *asyncqComponent) run() {
-	options := com.Options()
-	com.Logger().Info("asyncq component running", "lockThread", options.LockThread)
+func (c *asyncqComponent) run() {
+	options := c.Options()
+	c.Logger().Info("asyncq component running", "lockThread", options.LockThread)
 	if options.LockThread {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 	}
 	ctx := context.Background()
 	for {
-		com.cond.L.Lock()
-		for com.queue.size() == 0 {
-			com.cond.Wait()
+		c.cond.L.Lock()
+		for c.queue.size() == 0 {
+			c.cond.Wait()
 		}
-		front := com.queue.pop()
-		size := com.queue.size()
-		com.cond.L.Unlock()
+		front := c.queue.pop()
+		size := c.queue.size()
+		c.cond.L.Unlock()
 
 		if front != nil {
-			com.dispatcher.DispatchEvent(ctx, front)
+			c.dispatcher.DispatchEvent(ctx, front)
 			if size > 0 {
 				continue
 			}
 		}
 
 		select {
-		case <-com.quit:
-			com.Logger().Info("asyncq component quitting")
-			com.clean()
-			com.Logger().Info("asyncq component cleanup complete")
-			close(com.wait)
+		case <-c.quit:
+			c.Logger().Info("asyncq component quitting")
+			c.clean()
+			c.Logger().Info("asyncq component cleanup complete")
+			close(c.wait)
 			return
 		default:
 		}
@@ -130,52 +130,52 @@ func (com *asyncqComponent) run() {
 }
 
 // clean processes remaining events in the queue during shutdown.
-func (com *asyncqComponent) clean() {
-	com.Logger().Info("asyncq component cleaning up")
+func (c *asyncqComponent) clean() {
+	c.Logger().Info("asyncq component cleaning up")
 	ctx := context.Background()
 	for {
-		com.cond.L.Lock()
-		if com.queue.size() == 0 {
-			com.cond.L.Unlock()
+		c.cond.L.Lock()
+		if c.queue.size() == 0 {
+			c.cond.L.Unlock()
 			break
 		}
-		front := com.queue.pop()
-		com.cond.L.Unlock()
+		front := c.queue.pop()
+		c.cond.L.Unlock()
 
 		if front != nil {
-			com.dispatcher.DispatchEvent(ctx, front)
+			c.dispatcher.DispatchEvent(ctx, front)
 		}
 	}
 }
 
 // AddListener implements the event.Dispatcher interface.
-func (com *asyncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
-	return com.dispatcher.AddListener(listener)
+func (c *asyncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
+	return c.dispatcher.AddListener(listener)
 }
 
 // RemoveListener implements the event.Dispatcher interface.
-func (com *asyncqComponent) RemoveListener(id event.ListenerID) bool {
-	return com.dispatcher.RemoveListener(id)
+func (c *asyncqComponent) RemoveListener(id event.ListenerID) bool {
+	return c.dispatcher.RemoveListener(id)
 }
 
 // HasListener implements the event.Dispatcher interface.
-func (com *asyncqComponent) HasListener(id event.ListenerID) bool {
-	return com.dispatcher.HasListener(id)
+func (c *asyncqComponent) HasListener(id event.ListenerID) bool {
+	return c.dispatcher.HasListener(id)
 }
 
 // DispatchEvent implements the event.Dispatcher interface.
-func (com *asyncqComponent) DispatchEvent(ctx context.Context, e event.Event[reflect.Type]) error {
-	if atomic.LoadInt32(&com.status) != int32(lifecycle.Running) {
-		com.Logger().Error("asyncq component not running")
+func (c *asyncqComponent) DispatchEvent(ctx context.Context, e event.Event[reflect.Type]) error {
+	if atomic.LoadInt32(&c.status) != int32(lifecycle.Running) {
+		c.Logger().Error("asyncq component not running")
 		return errNotRunning
 	}
 
-	options := com.Options()
-	com.mutex.Lock()
-	size := com.queue.size()
+	options := c.Options()
+	c.mutex.Lock()
+	size := c.queue.size()
 	if options.MaxSize > 0 && size >= options.MaxSize {
-		com.mutex.Unlock()
-		com.Logger().Warn(
+		c.mutex.Unlock()
+		c.Logger().Warn(
 			"event discarded because the queue is full",
 			slog.Int("maxSize", options.MaxSize),
 			slog.Any("event", e),
@@ -183,25 +183,25 @@ func (com *asyncqComponent) DispatchEvent(ctx context.Context, e event.Event[ref
 		return errFull
 	}
 
-	com.queue.push(e)
-	size = com.queue.size()
-	oldMaxSizeEver := com.updateMaxSizeEver(size)
-	com.mutex.Unlock()
+	c.queue.push(e)
+	size = c.queue.size()
+	oldMaxSizeEver := c.updateMaxSizeEver(size)
+	c.mutex.Unlock()
 
 	const warningSizeMask = 1<<15 - 1
 	if size == 1 {
-		com.cond.Signal()
+		c.cond.Signal()
 	} else if size&warningSizeMask == 0 && size > oldMaxSizeEver {
-		com.Logger().Warn("queue size reached new peak", "size", size)
+		c.Logger().Warn("queue size reached new peak", "size", size)
 	}
 	return nil
 }
 
 // updateMaxSizeEver updates the peak number of requests in the queue.
-func (com *asyncqComponent) updateMaxSizeEver(size int) int {
-	maxSizeEver := com.maxSizeEver
-	if size > com.maxSizeEver || (size<<1) < com.maxSizeEver {
-		com.maxSizeEver = size
+func (c *asyncqComponent) updateMaxSizeEver(size int) int {
+	maxSizeEver := c.maxSizeEver
+	if size > c.maxSizeEver || (size<<1) < c.maxSizeEver {
+		c.maxSizeEver = size
 	}
 	return maxSizeEver
 }

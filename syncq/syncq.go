@@ -42,44 +42,44 @@ type syncqComponent struct {
 	mu         sync.RWMutex
 }
 
-func (com *syncqComponent) Init(ctx context.Context) error {
-	com.concurrent = op.IfFunc(com.Options().Concurrent == nil, true, com.Options().Concurrent.Deref)
-	com.dispatcher = event.NewDispatcher[reflect.Type](op.IfFunc(com.Options().Ordered == nil, true, com.Options().Ordered.Deref))
+func (c *syncqComponent) Init(ctx context.Context) error {
+	c.concurrent = op.IfFunc(c.Options().Concurrent == nil, true, c.Options().Concurrent.Deref)
+	c.dispatcher = event.NewDispatcher[reflect.Type](op.IfFunc(c.Options().Ordered == nil, true, c.Options().Ordered.Deref))
 	return nil
 }
 
 // AddListener implements event.Dispatcher interface.
-func (com *syncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
-	if com.concurrent {
-		com.mu.Lock()
-		defer com.mu.Unlock()
+func (c *syncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
+	if c.concurrent {
+		c.mu.Lock()
+		defer c.mu.Unlock()
 	}
-	return com.dispatcher.AddListener(listener)
+	return c.dispatcher.AddListener(listener)
 }
 
 // RemoveListener implements event.Dispatcher interface.
-func (com *syncqComponent) RemoveListener(id event.ListenerID) bool {
-	if com.concurrent {
-		com.mu.Lock()
-		defer com.mu.Unlock()
+func (c *syncqComponent) RemoveListener(id event.ListenerID) bool {
+	if c.concurrent {
+		c.mu.Lock()
+		defer c.mu.Unlock()
 	}
-	return com.dispatcher.RemoveListener(id)
+	return c.dispatcher.RemoveListener(id)
 }
 
 // HasListener implements event.Dispatcher interface.
-func (com *syncqComponent) HasListener(id event.ListenerID) bool {
-	if com.concurrent {
-		com.mu.RLock()
-		defer com.mu.RUnlock()
+func (c *syncqComponent) HasListener(id event.ListenerID) bool {
+	if c.concurrent {
+		c.mu.RLock()
+		defer c.mu.RUnlock()
 	}
-	return com.dispatcher.HasListener(id)
+	return c.dispatcher.HasListener(id)
 }
 
 // DispatchEvent implements event.Dispatcher interface.
-func (com *syncqComponent) DispatchEvent(ctx context.Context, event event.Event[reflect.Type]) error {
-	if com.concurrent {
-		com.mu.RLock()
-		defer com.mu.RUnlock()
+func (c *syncqComponent) DispatchEvent(ctx context.Context, event event.Event[reflect.Type]) error {
+	if c.concurrent {
+		c.mu.RLock()
+		defer c.mu.RUnlock()
 	}
-	return com.dispatcher.DispatchEvent(ctx, event)
+	return c.dispatcher.DispatchEvent(ctx, event)
 }

@@ -10,16 +10,13 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/gopherd/core/component"
-	"github.com/gopherd/core/event"
 	"github.com/gopherd/core/op"
 
-	httpapi "github.com/gopherd/components/httpserver/http/api"
-	loggerapi "github.com/gopherd/components/logger/api"
+	"github.com/gopherd/components/httpserver/http/httpapi"
 )
 
 // Name is the unique identifier for the logger component.
@@ -93,8 +90,7 @@ func init() {
 
 type loggerComponent struct {
 	component.BaseComponentWithRefs[Options, struct {
-		HTTPServer      component.OptionalReference[httpapi.Component]
-		EventDispatcher component.OptionalReference[event.Dispatcher[reflect.Type]]
+		HTTPServer component.OptionalReference[httpapi.Component]
 	}]
 	writer io.Writer
 	closer io.Closer
@@ -102,77 +98,73 @@ type loggerComponent struct {
 }
 
 // Init initializes the logger component.
-func (com *loggerComponent) Init(ctx context.Context) error {
-	com.Options().setDefaults()
-	if err := com.initWriter(); err != nil {
+func (c *loggerComponent) Init(ctx context.Context) error {
+	c.Options().setDefaults()
+	if err := c.initWriter(); err != nil {
 		return err
 	}
-	com.level.Set(com.Options().Level)
+	c.level.Set(c.Options().Level)
 
 	opts := &slog.HandlerOptions{
-		Level:     &com.level,
-		AddSource: com.Options().SourceFormat != "",
+		Level:     &c.level,
+		AddSource: c.Options().SourceFormat != "",
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if groups != nil {
 				return a
 			}
 			switch a.Key {
 			case slog.TimeKey:
-				return com.formatTime(a)
+				return c.formatTime(a)
 			case slog.SourceKey:
-				return com.formatSource(a)
+				return c.formatSource(a)
 			case slog.LevelKey:
-				return com.formatLevel(a)
+				return c.formatLevel(a)
 			}
 			return a
 		},
 	}
 	var handler slog.Handler
-	if com.Options().JSON {
-		handler = slog.NewJSONHandler(com.writer, opts)
+	if c.Options().JSON {
+		handler = slog.NewJSONHandler(c.writer, opts)
 	} else {
-		handler = slog.NewTextHandler(com.writer, opts)
+		handler = slog.NewTextHandler(c.writer, opts)
 	}
 	slog.SetDefault(slog.New(handler))
 	return nil
 }
 
-func (com *loggerComponent) Start(ctx context.Context) error {
-	if server := com.Refs().HTTPServer.Component(); server != nil {
-		if root := com.Options().HTTPPath; root != "" {
-			com.Logger().Info(
+func (c *loggerComponent) Start(ctx context.Context) error {
+	if server := c.Refs().HTTPServer.Component(); server != nil {
+		if root := c.Options().HTTPPath; root != "" {
+			c.Logger().Info(
 				"register HTTP handler",
 				"get", path.Join(root, "/get"),
 				"set", path.Join(root, "/set"),
 			)
-			server.HandleFunc([]string{http.MethodGet}, path.Join(root, "/get"), com.handleGetLogLevel)
-			server.HandleFunc([]string{http.MethodPost}, path.Join(root, "/set"), com.handleSetLogLevel)
+			server.HandleFunc([]string{http.MethodGet}, path.Join(root, "/get"), c.handleGetLogLevel)
+			server.HandleFunc([]string{http.MethodPost}, path.Join(root, "/set"), c.handleSetLogLevel)
 		}
-	}
-	if dispatcher := com.Refs().EventDispatcher.Component(); dispatcher != nil {
-		com.Logger().Info("register event listener")
-		dispatcher.AddListener(loggerapi.SetLevelEventListener(com.onSetLevelEvent))
 	}
 	return nil
 }
 
 // Uninit implements the component.Component interface.
-func (com *loggerComponent) Uninit(ctx context.Context) error {
-	if com.closer != nil {
-		return com.closer.Close()
+func (c *loggerComponent) Uninit(ctx context.Context) error {
+	if c.closer != nil {
+		return c.closer.Close()
 	}
 	return nil
 }
 
 // handleGetLogLevel handles the HTTP request to get log level.
-func (com *loggerComponent) handleGetLogLevel(w http.ResponseWriter, r *http.Request) {
-	level := com.level.Level()
+func (c *loggerComponent) handleGetLogLevel(w http.ResponseWriter, r *http.Request) {
+	level := c.level.Level()
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(level.String() + "\n"))
 }
 
 // handleSetLogLevel handles the HTTP request to set log level.
-func (com *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Request) {
+func (c *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Request) {
 	level := r.URL.Query().Get("level")
 	if level == "" {
 		http.Error(w, "missing level", http.StatusBadRequest)
@@ -183,35 +175,28 @@ func (com *loggerComponent) handleSetLogLevel(w http.ResponseWriter, r *http.Req
 		http.Error(w, "invalid level", http.StatusBadRequest)
 		return
 	}
-	com.level.Set(l)
-	com.Logger().Log(context.Background(), l, "set log level", "level", l)
+	c.level.Set(l)
+	c.Logger().Log(context.Background(), l, "set log level", "level", l)
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(l.String() + "\n"))
 }
 
-// onSetLevelEvent handles the SetLevelEvent event to set log level.
-func (com *loggerComponent) onSetLevelEvent(ctx context.Context, e *loggerapi.SetLevelEvent) error {
-	com.level.Set(e.Level)
-	com.Logger().Log(context.Background(), e.Level, "set log level", "level", e.Level)
-	return nil
-}
-
-func (com *loggerComponent) initWriter() error {
-	switch com.Options().Output {
+func (c *loggerComponent) initWriter() error {
+	switch c.Options().Output {
 	case "stderr":
-		com.writer = os.Stderr
+		c.writer = os.Stderr
 	case "stdout":
-		com.writer = os.Stdout
+		c.writer = os.Stdout
 	case "":
-		com.writer = io.Discard
+		c.writer = io.Discard
 	default:
 		return errors.New("unsupported output")
 	}
 	return nil
 }
 
-func (com *loggerComponent) formatTime(a slog.Attr) slog.Attr {
-	switch p := com.Options().TimeFormat; p {
+func (c *loggerComponent) formatTime(a slog.Attr) slog.Attr {
+	switch p := c.Options().TimeFormat; p {
 	case "":
 		return slog.Attr{}
 	case "s":
@@ -230,8 +215,8 @@ func (com *loggerComponent) formatTime(a slog.Attr) slog.Attr {
 	}
 }
 
-func (com *loggerComponent) formatSource(a slog.Attr) slog.Attr {
-	p := com.Options().SourceFormat
+func (c *loggerComponent) formatSource(a slog.Attr) slog.Attr {
+	p := c.Options().SourceFormat
 	if p == "" {
 		return slog.Attr{}
 	}
@@ -264,8 +249,8 @@ func (com *loggerComponent) formatSource(a slog.Attr) slog.Attr {
 	return slog.String("source", b.String())
 }
 
-func (com *loggerComponent) formatLevel(a slog.Attr) slog.Attr {
-	switch p := com.Options().LevelFormat; p {
+func (c *loggerComponent) formatLevel(a slog.Attr) slog.Attr {
+	switch p := c.Options().LevelFormat; p {
 	case "":
 		return slog.Attr{}
 	case "l":

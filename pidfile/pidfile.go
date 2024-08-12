@@ -30,27 +30,27 @@ type pidfileComponent struct {
 	filename string
 }
 
-func (com *pidfileComponent) Init(ctx context.Context) error {
-	filename := com.Options().Filename
+func (c *pidfileComponent) Init(ctx context.Context) error {
+	filename := c.Options().Filename
 	if filename == "" {
 		return nil
 	}
-	com.filename = filename
-	if err := com.createFile(); err != nil {
+	c.filename = filename
+	if err := c.createFile(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // createFile creates a new pid file. If the pid file exists and the process is running, an error is returned.
-func (com *pidfileComponent) createFile() error {
-	dir, _ := filepath.Split(com.filename)
+func (c *pidfileComponent) createFile() error {
+	dir, _ := filepath.Split(c.filename)
 	if dir != "." && dir != "" {
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return fmt.Errorf("PidFile: %v", err)
 		}
 	}
-	if content, err := os.ReadFile(com.filename); err == nil {
+	if content, err := os.ReadFile(c.filename); err == nil {
 		pidStr := strings.TrimSpace(string(content))
 		if pidStr == "" {
 			return nil
@@ -63,7 +63,7 @@ func (com *pidfileComponent) createFile() error {
 			return fmt.Errorf("pid file found, ensoure %s is not running", os.Args[0])
 		}
 	}
-	f, err := os.OpenFile(com.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(c.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
@@ -77,17 +77,17 @@ func (com *pidfileComponent) createFile() error {
 	return err
 }
 
-func (com *pidfileComponent) Uninit(ctx context.Context) error {
-	return com.removeFile()
+func (c *pidfileComponent) Uninit(ctx context.Context) error {
+	return c.removeFile()
 }
 
 // removeFile removes the pid file.
-func (com *pidfileComponent) removeFile() error {
-	if com.filename != "" {
-		if err := os.Chmod(com.filename, 0644); err != nil {
+func (c *pidfileComponent) removeFile() error {
+	if c.filename != "" {
+		if err := os.Chmod(c.filename, 0644); err != nil {
 			return err
 		}
-		return os.Remove(com.filename)
+		return os.Remove(c.filename)
 	}
 	return nil
 }

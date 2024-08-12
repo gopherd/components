@@ -5,11 +5,12 @@ import (
 	"context"
 	"fmt"
 
-	dbapi "github.com/gopherd/components/db/api"
 	"github.com/gopherd/core/component"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/gopherd/components/db/dbapi"
 )
 
 // Name is the unique identifier for the database component.
@@ -37,22 +38,22 @@ type dbComponent struct {
 }
 
 // Init initializes the database component.
-func (com *dbComponent) Init(ctx context.Context) error {
-	opts := com.Options()
+func (c *dbComponent) Init(ctx context.Context) error {
+	opts := c.Options()
 	db, err := openDB(opts.Driver, opts.DSN)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
-	com.db = db
+	c.db = db
 	return nil
 }
 
 // Uninit closes the database connection.
-func (com *dbComponent) Uninit(ctx context.Context) error {
-	if com.db == nil {
+func (c *dbComponent) Uninit(ctx context.Context) error {
+	if c.db == nil {
 		return nil
 	}
-	sqlDB, err := com.db.DB()
+	sqlDB, err := c.db.DB()
 	if err != nil {
 		return fmt.Errorf("failed to get database connection: %w", err)
 	}
@@ -60,8 +61,8 @@ func (com *dbComponent) Uninit(ctx context.Context) error {
 }
 
 // Engine returns the GORM database instance.
-func (com *dbComponent) Engine() *gorm.DB {
-	return com.db
+func (c *dbComponent) Engine() *gorm.DB {
+	return c.db
 }
 
 // openDB creates a new database connection based on the driver and DSN.
