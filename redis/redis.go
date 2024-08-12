@@ -2,10 +2,10 @@ package redis
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gopherd/core/component"
+	"github.com/gopherd/core/types"
 
 	"github.com/gopherd/components/redis/redisapi"
 )
@@ -48,22 +48,22 @@ type Options struct {
 	MaxRetries int
 	// Minimum backoff between each retry.
 	// Default is 8 milliseconds; -1 disables backoff.
-	MinRetryBackoff time.Duration
+	MinRetryBackoff types.Duration
 	// Maximum backoff between each retry.
 	// Default is 512 milliseconds; -1 disables backoff.
-	MaxRetryBackoff time.Duration
+	MaxRetryBackoff types.Duration
 
 	// Dial timeout for establishing new connections.
 	// Default is 5 seconds.
-	DialTimeout time.Duration
+	DialTimeout types.Duration
 	// Timeout for socket reads. If reached, commands will fail
 	// with a timeout instead of blocking. Use value -1 for no timeout and 0 for default.
 	// Default is 3 seconds.
-	ReadTimeout time.Duration
+	ReadTimeout types.Duration
 	// Timeout for socket writes. If reached, commands will fail
 	// with a timeout instead of blocking.
 	// Default is ReadTimeout.
-	WriteTimeout time.Duration
+	WriteTimeout types.Duration
 
 	// Type of connection pool.
 	// true for FIFO pool, false for LIFO pool.
@@ -77,20 +77,20 @@ type Options struct {
 	MinIdleConns int
 	// Connection age at which client retires (closes) the connection.
 	// Default is to not close aged connections.
-	MaxConnAge time.Duration
+	MaxConnAge types.Duration
 	// Amount of time client waits for connection if all connections
 	// are busy before returning an error.
 	// Default is ReadTimeout + 1 second.
-	PoolTimeout time.Duration
+	PoolTimeout types.Duration
 	// Amount of time after which client closes idle connections.
 	// Should be less than server's timeout.
 	// Default is 5 minutes. -1 disables idle timeout check.
-	IdleTimeout time.Duration
+	IdleTimeout types.Duration
 	// Frequency of idle checks made by idle connections reaper.
 	// Default is 1 minute. -1 disables idle connections reaper,
 	// but idle connections are still discarded by the client
 	// if IdleTimeout is set.
-	IdleCheckFrequency time.Duration
+	IdleCheckFrequency types.Duration
 }
 
 type redisComponent struct {
@@ -108,18 +108,18 @@ func (c *redisComponent) Init(ctx context.Context) error {
 		Password:           options.Password,
 		DB:                 options.DB,
 		MaxRetries:         options.MaxRetries,
-		MinRetryBackoff:    options.MinRetryBackoff,
-		MaxRetryBackoff:    options.MaxRetryBackoff,
-		DialTimeout:        options.DialTimeout,
-		ReadTimeout:        options.ReadTimeout,
-		WriteTimeout:       options.WriteTimeout,
+		MinRetryBackoff:    options.MinRetryBackoff.Value(),
+		MaxRetryBackoff:    options.MaxRetryBackoff.Value(),
+		DialTimeout:        options.DialTimeout.Value(),
+		ReadTimeout:        options.ReadTimeout.Value(),
+		WriteTimeout:       options.WriteTimeout.Value(),
 		PoolFIFO:           options.PoolFIFO,
 		PoolSize:           options.PoolSize,
 		MinIdleConns:       options.MinIdleConns,
-		MaxConnAge:         options.MaxConnAge,
-		PoolTimeout:        options.PoolTimeout,
-		IdleTimeout:        options.IdleTimeout,
-		IdleCheckFrequency: options.IdleCheckFrequency,
+		MaxConnAge:         options.MaxConnAge.Value(),
+		PoolTimeout:        options.PoolTimeout.Value(),
+		IdleTimeout:        options.IdleTimeout.Value(),
+		IdleCheckFrequency: options.IdleCheckFrequency.Value(),
 	})
 	if err := client.Ping(ctx).Err(); err != nil {
 		return err
