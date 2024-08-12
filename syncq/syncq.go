@@ -1,5 +1,5 @@
-// Package eventide provides a flexible event handling system.
-package eventide
+// Package syncq provides a flexible event handling system.
+package syncq
 
 import (
 	"context"
@@ -12,39 +12,44 @@ import (
 	"github.com/gopherd/core/types"
 )
 
-// Name is the unique identifier for the eventide component.
-const Name = "github.com/gopherd/components/eventide"
+// Name is the unique identifier for the syncq component.
+const Name = "github.com/gopherd/components/syncq"
 
-// Options defines the configuration options for the eventide component.
+// Options defines the configuration options for the syncq component.
 type Options struct {
-	Ordered    *types.Bool // Determines if listeners should be invoked in order of registration
-	Concurrent *types.Bool // Determines if listeners should be invoked concurrently
+	// Determines if listeners should be invoked in order of registration.
+	// It is true by default.
+	Ordered *types.Bool
+
+	// Determines if listeners should be invoked concurrently.
+	// It is true by default.
+	Concurrent *types.Bool
 }
 
-// Ensure eventideComponent implements eventideapi.Component interface.
-var _ event.Dispatcher[reflect.Type] = (*eventideComponent)(nil)
+// Ensure syncqComponent implements event.Dispatcher interface.
+var _ event.Dispatcher[reflect.Type] = (*syncqComponent)(nil)
 
 func init() {
 	component.Register(Name, func() component.Component {
-		return &eventideComponent{}
+		return &syncqComponent{}
 	})
 }
 
-type eventideComponent struct {
+type syncqComponent struct {
 	component.BaseComponent[Options]
 	dispatcher event.Dispatcher[reflect.Type]
 	concurrent bool
 	mu         sync.RWMutex
 }
 
-func (com *eventideComponent) Init(ctx context.Context) error {
+func (com *syncqComponent) Init(ctx context.Context) error {
 	com.concurrent = op.IfFunc(com.Options().Concurrent == nil, true, com.Options().Concurrent.Deref)
 	com.dispatcher = event.NewDispatcher[reflect.Type](op.IfFunc(com.Options().Ordered == nil, true, com.Options().Ordered.Deref))
 	return nil
 }
 
 // AddListener implements event.Dispatcher interface.
-func (com *eventideComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
+func (com *syncqComponent) AddListener(listener event.Listener[reflect.Type]) event.ListenerID {
 	if com.concurrent {
 		com.mu.Lock()
 		defer com.mu.Unlock()
@@ -53,7 +58,7 @@ func (com *eventideComponent) AddListener(listener event.Listener[reflect.Type])
 }
 
 // RemoveListener implements event.Dispatcher interface.
-func (com *eventideComponent) RemoveListener(id event.ListenerID) bool {
+func (com *syncqComponent) RemoveListener(id event.ListenerID) bool {
 	if com.concurrent {
 		com.mu.Lock()
 		defer com.mu.Unlock()
@@ -62,7 +67,7 @@ func (com *eventideComponent) RemoveListener(id event.ListenerID) bool {
 }
 
 // HasListener implements event.Dispatcher interface.
-func (com *eventideComponent) HasListener(id event.ListenerID) bool {
+func (com *syncqComponent) HasListener(id event.ListenerID) bool {
 	if com.concurrent {
 		com.mu.RLock()
 		defer com.mu.RUnlock()
@@ -71,7 +76,7 @@ func (com *eventideComponent) HasListener(id event.ListenerID) bool {
 }
 
 // DispatchEvent implements event.Dispatcher interface.
-func (com *eventideComponent) DispatchEvent(ctx context.Context, event event.Event[reflect.Type]) error {
+func (com *syncqComponent) DispatchEvent(ctx context.Context, event event.Event[reflect.Type]) error {
 	if com.concurrent {
 		com.mu.RLock()
 		defer com.mu.RUnlock()

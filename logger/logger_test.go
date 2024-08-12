@@ -3,6 +3,7 @@ package logger
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gopherd/core/component"
+	"github.com/gopherd/core/op"
 	"github.com/gopherd/core/types"
 )
 
@@ -33,7 +35,7 @@ func mustNew(t *testing.T, name string, options Options) component.Component {
 	}
 	if err := comp.Setup(mockEntity{}, component.Config{
 		Name:    name,
-		Options: types.MustJSON(options),
+		Options: types.NewRawObject(op.MustValue(json.Marshal(options))),
 	}); err != nil {
 		t.Fatalf("Failed to setup component %q: %v", name, err)
 	}
