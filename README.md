@@ -10,7 +10,7 @@
   httpserver/
   ├── http/
   ├── echo/
-  ├── gin/
+  └── gin/
   ```
 
 ### 1.2 API Definition
@@ -60,20 +60,20 @@
 - For boolean flags, define them so that the default (zero) value is false and represents the most common or safest configuration.
 - If a flag needs to be true by default, invert its meaning in the name (e.g., use `DisableFeature` instead of `EnableFeature`).
 
-### 4.2 Default Values
-- Implement a method to set default values for options:
+### 4.2 OnLoaded hook
+- Implement `OnLoaded` method to set default values or validator for options:
   ```go
-  func (o *Options) setDefaults() {
+  func (o *Options) OnLoaded() error {
       // Set default values
+      // Validate values
   }
   ```
-- Call `setDefaults()` in the `Init` method of the component.
 
 ## 5. Component Implementation
 
 ### 5.1 Base Component
 - Embed `component.BaseComponent[Options]` for basic components.
-- Use `component.BaseComponentWithRefs[Options, Refs]` for components with references to other components.
+- Embed `component.BaseComponentWithRefs[Options, Refs]` for components with references to other components.
 
 ### 5.2 Interface Compliance
 - Ensure the component implements necessary interfaces.
@@ -149,7 +149,7 @@
 
 ## 8. Cross-platform Compatibility
 
-- Use build tags for platform-specific implementations (e.g., `pid_unix.go`, `pid_windows.go`).
+- Use build tags for platform-specific implementations (e.g., `abc_unix.go`, `abc_windows.go`).
 - Provide fallback implementations for unsupported platforms when possible.
 
 ## 9. Testing

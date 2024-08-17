@@ -1,15 +1,13 @@
 package asyncq
 
 import (
-	"reflect"
-
 	"github.com/gopherd/core/event"
 	"github.com/gopherd/core/math/mathutil"
 )
 
 // queue represents an internal event queue with circular buffer implementation.
-type queue struct {
-	buf []event.Event[reflect.Type]
+type queue[T comparable] struct {
+	buf []event.Event[T]
 	len int
 	cap int
 	pos int
@@ -18,22 +16,22 @@ type queue struct {
 
 // newQueue creates a new queue with the given capacity.
 // The capacity is rounded up to the nearest power of 2.
-func newQueue(cap int) *queue {
+func newQueue[T comparable](cap int) *queue[T] {
 	cap = int(mathutil.UpperPow2(cap))
-	return &queue{
-		buf: make([]event.Event[reflect.Type], cap),
+	return &queue[T]{
+		buf: make([]event.Event[T], cap),
 		cap: cap,
 	}
 }
 
 // size returns the current number of events in the queue.
-func (q *queue) size() int {
+func (q *queue[T]) size() int {
 	return q.len
 }
 
 // push adds an Event to the queue and returns the new size.
 // If the queue is full, it will expand automatically.
-func (q *queue) push(e event.Event[reflect.Type]) int {
+func (q *queue[T]) push(e event.Event[T]) int {
 	if q.len == q.cap {
 		q.expand()
 	}
@@ -45,7 +43,7 @@ func (q *queue) push(e event.Event[reflect.Type]) int {
 
 // pop removes and returns the oldest Event from the queue.
 // If the queue is empty, it returns nil.
-func (q *queue) pop() event.Event[reflect.Type] {
+func (q *queue[T]) pop() event.Event[T] {
 	if q.len == 0 {
 		return nil
 	}
@@ -58,14 +56,14 @@ func (q *queue) pop() event.Event[reflect.Type] {
 }
 
 // index calculates the actual index in the circular buffer.
-func (q *queue) index(n int) int {
+func (q *queue[T]) index(n int) int {
 	return n & (q.cap - 1)
 }
 
 // expand doubles the capacity of the queue.
-func (q *queue) expand() {
+func (q *queue[T]) expand() {
 	oldCap := q.cap
-	newBuf := make([]event.Event[reflect.Type], oldCap*2)
+	newBuf := make([]event.Event[T], oldCap*2)
 
 	if q.cur > q.pos {
 		copy(newBuf, q.buf[q.pos:q.cur])

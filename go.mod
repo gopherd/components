@@ -5,7 +5,7 @@ go 1.22.4
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/gopherd/core v0.0.0-20240813072931-3e94947c05b3
+	github.com/gopherd/core v0.0.0-20240817110850-03f8e8e11dfa
 	github.com/labstack/echo/v4 v4.12.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.9

@@ -74,12 +74,13 @@ type Options struct {
 	HTTPPath string
 }
 
-func (options *Options) setDefaults() {
+func (options *Options) OnLoaded() error {
 	op.SetOr(&options.Output, "stderr")
 	op.SetOr(&options.Level, slog.LevelInfo)
 	op.SetOr(&options.TimeFormat, "H")
 	op.SetOr(&options.SourceFormat, "S")
 	op.SetOr(&options.LevelFormat, "L")
+	return nil
 }
 
 func init() {
@@ -99,7 +100,6 @@ type loggerComponent struct {
 
 // Init initializes the logger component.
 func (c *loggerComponent) Init(ctx context.Context) error {
-	c.Options().setDefaults()
 	if err := c.initWriter(); err != nil {
 		return err
 	}
@@ -133,6 +133,7 @@ func (c *loggerComponent) Init(ctx context.Context) error {
 	return nil
 }
 
+// Start implements the component.Component interface.
 func (c *loggerComponent) Start(ctx context.Context) error {
 	if server := c.Refs().HTTPServer.Component(); server != nil {
 		if root := c.Options().HTTPPath; root != "" {
@@ -154,6 +155,16 @@ func (c *loggerComponent) Uninit(ctx context.Context) error {
 		return c.closer.Close()
 	}
 	return nil
+}
+
+// SetLogLevel sets the log level.
+func (c *loggerComponent) SetLogLevel(level slog.Level) {
+	c.level.Set(level)
+}
+
+// GetLogLevel returns the log level.
+func (c *loggerComponent) GetLogLevel() slog.Level {
+	return c.level.Level()
 }
 
 // handleGetLogLevel handles the HTTP request to get log level.
