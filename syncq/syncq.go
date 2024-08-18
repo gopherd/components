@@ -10,7 +10,7 @@ import (
 	"github.com/gopherd/core/event"
 )
 
-const Name = "github.com/gopherd/component/syncq"
+const Name = "github.com/gopherd/components/syncq"
 
 func init() {
 	component.Register(Name, func() component.Component {

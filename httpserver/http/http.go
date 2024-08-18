@@ -12,7 +12,7 @@ import (
 )
 
 // Name is the unique identifier for the HTTPServerComponent.
-const Name = "github.com/gopherd/component/httpserver/http"
+const Name = "github.com/gopherd/components/httpserver/http"
 
 func init() {
 	// Register the HTTPServerComponent implementation.
