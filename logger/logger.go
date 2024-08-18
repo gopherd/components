@@ -40,9 +40,9 @@ type Options struct {
 	// TimeFormat specifies the time format for log entries.
 	// Supported values:
 	//   - "h": "2006-01-02 15:04:05" in local time
-	//   - "H": "2006-01-02 15:04:05.999999" in local time
+	//   - "H": "2006-01-02 15:04:05.000000" in local time
 	//   - "u": "2006-01-02 15:04:05" in UTC
-	//   - "U": "2006-01-02 15:04:05.999999" in UTC
+	//   - "U": "2006-01-02 15:04:05.000000" in UTC
 	//   - "t": RFC3339 format
 	//   - "T": RFC3339Nano format
 	//   - "s": Unix seconds
