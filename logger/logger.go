@@ -277,7 +277,7 @@ func getTimeFormat(p string) string {
 	case "h", "u":
 		return "2006-01-02 15:04:05"
 	case "H", "U":
-		return "2006-01-02 15:04:05.999999"
+		return "2006-01-02 15:04:05.000000"
 	case "t":
 		return time.RFC3339
 	case "T":
