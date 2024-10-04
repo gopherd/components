@@ -7,7 +7,7 @@ struct Options {
 
 	// MaxSize is the maximum number of requests allowed in the queue.
 	// Requests exceeding this limit will be discarded.
-    @next(default=1<<20)
+	@next(default=1<<20)
 	int maxSize;
 
 	// NumConsumers is the number of consumer goroutines to run concurrently.

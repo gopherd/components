@@ -1,18 +1,18 @@
 @next(
-    pascal_case="EchoServer",
-    go_imports="*echo:github.com/labstack/echo/v4.Echo,*github.com/gopherd/components/httpserver.Component"
+	pascal_case="EchoServer",
+	go_imports="*echo:github.com/labstack/echo/v4.Echo,*github.com/gopherd/components/httpserver.Component"
 )
 package echoserver;
 
 struct Options {
-    // Addr is the address to listen on.
+	// Addr is the address to listen on.
 	string addr;
-    // Block indicates whether the Start method should block.
+	// Block indicates whether the Start method should block.
 	bool block;
 }
 
 @component(extends="httpserver.Component")
 interface Component {
-    @next(go_alias="*echo.Echo")
-    engine() any;
+	@next(go_alias="*echo.Echo")
+	engine() any;
 }

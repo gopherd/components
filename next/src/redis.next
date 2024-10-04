@@ -1,5 +1,5 @@
 @next(
-    go_imports="*github.com/gopherd/core/types.Duration,*redis:github.com/go-redis/redis/v8.Client",
+	go_imports="*github.com/gopherd/core/types.Duration,*redis:github.com/go-redis/redis/v8.Client",
 )
 package redis;
 

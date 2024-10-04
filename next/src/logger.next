@@ -18,7 +18,7 @@ struct Options {
 	Level level;
 
 	// JSON determines whether to output logs in JSON format.
-    @next(pascal_case="JSON")
+	@next(pascal_case="JSON")
 	bool json;
 
 	// TimeFormat specifies the time format for log entries.
@@ -64,6 +64,6 @@ struct Options {
 
 // Component represents the logger component API.
 interface Component {
-    GetLogLevel() Level;
-    SetLogLevel(Level level);
+	GetLogLevel() Level;
+	SetLogLevel(Level level);
 }

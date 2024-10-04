@@ -3,11 +3,11 @@ package db;
 
 // Options represents the database component options.
 struct Options {
-    // The database driver name.
-    string driver;
-    // The data source name.
-    @next(pascal_case="DSN")
-    string dsn;
+	// The database driver name.
+	string driver;
+	// The data source name.
+	@next(pascal_case="DSN")
+	string dsn;
 }
 
 @next(go_alias="*gorm.DB")
@@ -15,5 +15,5 @@ interface Engine {}
 
 // Component represents the database component API.
 interface Component {
-    engine() Engine;
+	engine() Engine;
 }
