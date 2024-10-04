@@ -1,0 +1,34 @@
+@next(
+	pascal_case="TimeFlow",
+    go_imports="*time.Time, *time.Duration, *github.com/gopherd/core/types.Duration",
+)
+package timeflow;
+
+@next(go_alias="time.Duration") 
+interface Duration {}
+
+@next(go_alias="time.Time") 
+interface Time {}
+
+struct Options {
+    @next(go_alias="types.Duration")
+	any initialOffset;
+	@next(pascal_case="HTTPPath")
+	string httpPath;
+}
+
+// Component represents a time flow management component.
+// It provides methods to manage time offsets and adjustments.
+interface Component {
+	// Offset returns the current time offset.
+	offset() Duration;
+
+	// SetOffset sets a new time offset.
+	setOffset(Duration duration);
+
+	// Now returns the current time adjusted by the component's offset.
+	now() Time;
+
+	// Adjust applies the component's offset to the given time.
+	adjust(Time t) Time;
+}

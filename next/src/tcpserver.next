@@ -1,0 +1,20 @@
+@next(pascal_case="TCPServer")
+package tcpserver;
+
+// Options represents the configuration options for the TCP server.
+struct Options {
+	// Network represents the network type, either tcp or unix.
+	@next(default="tcp")
+	string network;
+	// Addr represents the host:port address.
+	string addr;
+	// KeepAlive specifies the keep-alive period for an active network connection.
+	@next(default=300)
+	int keepAlive;
+	// ReadTimeout specifies the maximum duration for reading the entire request.
+	@next(default=10)
+	int readTimeout;
+	// WriteTimeout specifies the maximum duration before timing out writes of the response.
+	@next(default=10)
+	int writeTimeout;
+}

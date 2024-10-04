@@ -1,0 +1,6 @@
+{{- define "meta/path"}}{{this.Package.Name}}/export/export.go{{end -}}
+{{- define "meta/skip"}}{{exist meta.path}}{{end -}}
+
+package {{render "package:name" this.Package}}
+
+import _ "github.com/gopherd/components/{{this.Package.Name}}/internal"

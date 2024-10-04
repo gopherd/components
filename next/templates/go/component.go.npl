@@ -1,0 +1,41 @@
+{{- define "meta/path"}}{{this.Package.Name}}/component.go{{end -}}
+
+{{- define "go/imports:declarations" -}}
+{{super .}}
+import "github.com/gopherd/core/op"
+{{end -}}
+
+{{- define "go/imports:unused" -}}
+{{super .}}
+var _ = op.SetOr[any]
+{{end -}}
+
+{{- define "go/consts" -}}
+{{super .}}
+// Name represents the {{this.Package.Name}} component name.
+const Name = "github.com/gopherd/components/{{this.Package.Name}}";
+{{end -}}
+
+{{- define "go/struct" -}}
+{{super .}}
+func (x *{{next .Type}}) OnLoaded() {
+    {{- range .Fields.List}}
+    {{- if .Annotations.optional.Contains "default"}}
+    op.SetOr(&x.{{render "struct.field:name" .}}, {{.Annotations.optional.default | make}})
+    {{- end}}
+    {{- end}}
+}
+{{end -}}
+
+{{- define "go/interface.methods"}}
+{{- with .Decl.Annotations.component.extends}}
+    {{- range (. | split "," | map trim)}}
+    {{- println}}{{.}}
+    {{- end}}
+{{end -}}
+{{super . -}}
+{{end -}}
+
+{{- head}}
+
+{{next this}}

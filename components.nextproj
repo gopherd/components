@@ -1,0 +1,7 @@
+output:
+  go: ./
+
+templates:
+  go: [./next/templates/go]
+
+sources: [./next/src]

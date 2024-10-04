@@ -1,0 +1,9 @@
+package syncq;
+
+// Options defines the configuration options for the syncq component.
+struct Options {
+	// Unordered determines if listeners should be invoked in the order they are added.
+	bool unordered;
+	// Concurrent determines if listeners should be invoked concurrently.
+	bool concurrent;
+}

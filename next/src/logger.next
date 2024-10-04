@@ -1,0 +1,69 @@
+@next(go_imports="*log/slog.Level")
+package logger;
+
+@next(go_alias="slog.Level")
+interface Level {}
+
+// Options defines the configuration options for the logger component.
+struct Options {
+	// Output specifies where the log is written to.
+	// Supported values:
+	//   - "stderr": standard error output
+	//   - "stdout": standard output
+	//   - "": discard logs
+	@next(default="stderr")
+	string output;
+
+	// Level sets the minimum log level.
+	Level level;
+
+	// JSON determines whether to output logs in JSON format.
+    @next(pascal_case="JSON")
+	bool json;
+
+	// TimeFormat specifies the time format for log entries.
+	// Supported values:
+	//   - "h": "2006-01-02 15:04:05" in local time
+	//   - "H": "2006-01-02 15:04:05.000000" in local time
+	//   - "u": "2006-01-02 15:04:05" in UTC
+	//   - "U": "2006-01-02 15:04:05.000000" in UTC
+	//   - "t": RFC3339 format
+	//   - "T": RFC3339Nano format
+	//   - "s": Unix seconds
+	//   - "S": Unix nanoseconds
+	//   - "": omit time
+	//   - other: custom time format
+	@next(default="H")
+	string timeFormat;
+
+	// SourceFormat specifies the source code location format.
+	// Supported values:
+	//   - "s": file:line
+	//   - "S": pkg/file:line
+	//   - "n": pkg.func/file:line
+	//   - "": omit source
+	@next(default="S")
+	string sourceFormat;
+
+	// LevelFormat specifies the log level format.
+	// Supported values:
+	//   - "l": one letter (D, I, W, E)
+	//   - "L": full word (DEBUG, INFO, WARN, ERROR)
+	//   - "": omit level
+	@next(default="L")
+	string levelFormat;
+
+	// HTTPPath specifies the root HTTP path to get/set log level.
+	// If empty, the HTTP handler is not registered.
+	//
+	// - get log level: GET {HTTPPath}/get
+	// - set log level: POST {HTTPPath}/set?level={level} where level is one of DEBUG, INFO, WARN, ERROR or a number
+	@next(pascal_case="HTTPPath")
+	string httpPath;
+}
+
+// Component represents the logger component API.
+interface Component {
+    GetLogLevel() Level;
+    SetLogLevel(Level level);
+}

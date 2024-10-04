@@ -1,0 +1,7 @@
+@next(pascal_case="PIDFile")
+package pidfile;
+
+struct Options {
+	// Filename is the path to the pid file.
+	string filename;
+}

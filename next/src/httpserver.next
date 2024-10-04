@@ -1,0 +1,21 @@
+@next(pascal_case="HTTPServer", go_imports="*net/http.Handler")
+package httpserver;
+
+struct Options {
+    // Addr is the address to listen on.
+	string addr;
+    // Block indicates whether the Start method should block.
+	bool block;
+    // NewMux indicates whether to create a new ServeMux.
+	bool newMux;
+}
+
+interface Component {
+    // Handle registers the handler for the given pattern and methods.
+    // If method is empty, it registers the handler for all methods.
+    handle(vector<string> methods, string string, @next(go_alias="http.Handler") any handler);
+
+    // HandleFunc registers the handler function for the given pattern and methods.
+    // If method is empty, it registers the handler for all methods.
+    handleFunc(vector<string> methods, string path , @next(go_alias="http.HandlerFunc") any HandlerFunc);
+}

@@ -1,0 +1,18 @@
+@next(
+    pascal_case="GinServer",
+    go_imports="*github.com/gin-gonic/gin.Engine,*github.com/gopherd/components/httpserver.Component"
+)
+package ginserver;
+
+struct Options {
+    // Addr is the address to listen on.
+	string addr;
+    // Block indicates whether the Start method should block.
+	bool block;
+}
+
+@component(extends="httpserver.Component")
+interface Component {
+    @next(go_alias="*gin.Engine")
+    engine() any;
+}
