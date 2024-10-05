@@ -5,13 +5,6 @@
 ### 1.1 Package Organization
 - Each component should reside in its own package.
 - Use descriptive package names that reflect the component's functionality (e.g., `tcpserver`, `logger`, `redis`).
-- For components with multiple implementations or APIs, use subpackages:
-  ```
-  httpserver/
-  ├── http/
-  ├── echo/
-  └── gin/
-  ```
 
 ### 1.2 API Definition
 - If the component has a public API, define it in a separate `api` or `[component]api` package (e.g., `redisapi`, `dbapi`).
@@ -171,18 +164,6 @@
 - Use `component.OptionalReference` for optional component references.
   - Even after `Init`, always check if `Component()` is nil before using optional references.
   - Optional components may not be injected, so your component should handle their absence gracefully.
-
-### 11.2 Event Handling
-- Use the `event` package for implementing event-driven components.
-- In the package where events are defined, add the following comment:
-  ```go
-  //go:generate eventer
-  ```
-  This will generate helper definitions for all types suffixed with `Event`, facilitating easier use of events.
-- To install the `eventer` tool, use the following command:
-  ```
-  go install github.com/gopherd/tools/cmd/eventer@latest
-  ```
 
 Remember that the framework automatically handles dependency injection, so you don't need to manually resolve references in the `Init` method.
 

@@ -24,4 +24,8 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
+    op.SetOr(&x.Network, "tcp")
+    op.SetOr(&x.KeepAlive, 300)
+    op.SetOr(&x.ReadTimeout, 10)
+    op.SetOr(&x.WriteTimeout, 10)
 }

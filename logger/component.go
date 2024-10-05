@@ -58,6 +58,10 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
+    op.SetOr(&x.Output, "stderr")
+    op.SetOr(&x.TimeFormat, "H")
+    op.SetOr(&x.SourceFormat, "S")
+    op.SetOr(&x.LevelFormat, "L")
 }
 
 // Component represents the logger component API.

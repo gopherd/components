@@ -26,7 +26,7 @@ func (x *Options) OnLoaded() {
 type Component interface {
 	// Handle registers the handler for the given pattern and methods.
 	// If method is empty, it registers the handler for all methods.
-	Handle(methods []string, string string, handler http.Handler)
+	Handle(methods []string, path string, handler http.Handler)
 	// HandleFunc registers the handler function for the given pattern and methods.
 	// If method is empty, it registers the handler for all methods.
 	HandleFunc(methods []string, path string, handlerFunc http.HandlerFunc)

@@ -1,4 +1,4 @@
-@next(pascal_case="HTTPServer", go_imports="*net/http.Handler")
+@next(pascal_case="HTTPServer", tokens="HTTP Server", go_imports="*net/http.Handler")
 package httpserver;
 
 struct Options {
@@ -13,7 +13,7 @@ struct Options {
 interface Component {
 	// Handle registers the handler for the given pattern and methods.
 	// If method is empty, it registers the handler for all methods.
-	handle(vector<string> methods, string string, @next(go_alias="http.Handler") any handler);
+	handle(vector<string> methods, string path, @next(go_alias="http.Handler") any handler);
 
 	// HandleFunc registers the handler function for the given pattern and methods.
 	// If method is empty, it registers the handler for all methods.
