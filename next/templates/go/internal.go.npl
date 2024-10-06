@@ -1,25 +1,23 @@
 {{- define "meta/path"}}{{this.Package.Name}}/internal/{{this.Package.Name}}.go{{end -}}
 {{- define "meta/skip"}}{{exist meta.path}}{{end -}}
+{{- define "meta/_objName"}}{{printf "%sComponent" (render "node:pascal.case.name" this.Package)}}{{end -}}
 
 {{- define "go/dict:import.statement"}}
 {{with .name}}{{.}} {{end}}"{{.value}}"
 {{- end -}}
 
 {{- define "go/interface"}}
-{{$objName := printf "%sComponent" (render "node:pascal.case.name" .File.Package) -}}
-{{- if eq "Component" .Name -}}
-// Ensure {{$objName}} implements {{$objName}} interface.
-var _ {{this.Package.Name}}.Component = (*{{$objName}})(nil)
+{{if eq "Component" .Name -}}
+// Ensure *{{meta._objName}} implements {{this.Package.Name}}.Component interface.
+var _ {{this.Package.Name}}.Component = (*{{meta._objName}})(nil)
 {{range .Methods.List}}
 // {{.Name}} implements {{this.Package.Name}}.Component.{{.Name}}.
-func (c *{{$objName}}) {{render "interface.method:name" .}}({{next .Params}}){{next .Result}} {
+func (c *{{meta._objName}}) {{render "interface.method:name" .}}({{next .Params}}){{next .Result}} {
 	panic("TODO: not implemented")
 }
 {{end -}}
 {{end -}}
 {{end -}}
-
-{{- $objName := printf "%sComponent" (render "node:pascal.case.name" this.Package) -}}
 
 package {{this.Package.Name}}
 
@@ -33,36 +31,32 @@ import (
 
 func init() {
 	component.Register({{this.Package.Name}}.Name, func() component.Component {
-		return &{{$objName}}{}
+		return &{{meta._objName}}{}
 	})
 }
 
-// {{$objName}} implements {{this.Package.Name}}.Component.
-type {{$objName}} struct {
+// {{meta._objName}} implements {{this.Package.Name}}.Component.
+type {{meta._objName}} struct {
 	component.BaseComponent[{{this.Package.Name}}.Options]
 }
 
 // Init implements component.Component.Init.
-func (c *{{$objName}}) Init(ctx context.Context) error {
-	// TODO: implement the Init method or remove it if not needed
-	return nil
+func (c *{{meta._objName}}) Init(ctx context.Context) error {
+	panic("TODO: implement the Init method or remove it if not needed")
 }
 
 // Uninit implements component.Component.Uninit.
-func (c *{{$objName}}) Uninit(ctx context.Context) error {
-	// TODO: implement the Uninit method or remove it if not needed
-	return nil
+func (c *{{meta._objName}}) Uninit(ctx context.Context) error {
+	panic("TODO: implement the Uninit method or remove it if not needed")
 }
 
 // Start implements component.Component.Start.
-func (c *{{$objName}}) Start(ctx context.Context) error {
-	// TODO: implement the Start method or remove it if not needed
-	return nil
+func (c *{{meta._objName}}) Start(ctx context.Context) error {
+	panic("TODO: implement the Start method or remove it if not needed")
 }
 
 // Shutdown implements component.Component.Shutdown.
-func (c *{{$objName}}) Shutdown(ctx context.Context) error {
-	// TODO: implement the Shutdown method or remove it if not needed
-	return nil
+func (c *{{meta._objName}}) Shutdown(ctx context.Context) error {
+	panic("TODO: implement the Shutdown method or remove it if not needed")
 }
 {{render "go/interfaces" this.Package.Decls.Interfaces}}

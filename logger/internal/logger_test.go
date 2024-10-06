@@ -35,10 +35,10 @@ func mustNew(t *testing.T, name string, options logger.Options) component.Compon
 		t.Fatalf("Failed to create component %q: %v", name, err)
 		return nil
 	}
-	if err := comp.Setup(mockEntity{}, component.Config{
+	if err := comp.Setup(mockEntity{}, &component.Config{
 		Name:    name,
-		Options: types.NewRawObject(op.MustValue(json.Marshal(options))),
-	}); err != nil {
+		Options: types.NewRawObject(op.MustResult(json.Marshal(options))),
+	}, false); err != nil {
 		t.Fatalf("Failed to setup component %q: %v", name, err)
 	}
 
@@ -246,9 +246,9 @@ func TestFormatSource(t *testing.T) {
 	}{
 		{"Empty", "", ""},
 		{"File and line", "s", "source=logger_test.go:"},
-		{"Package, file, and line", "S", "source=logger/logger_test.go:"},
-		{"Full", "n", "source=logger.TestFormatSource/logger_test.go:"},
-		{"Invalid", "invalid", "/logger/logger_test.go:"},
+		{"Package, file, and line", "S", "source=internal/logger_test.go:"},
+		{"Full", "n", "source=internal.TestFormatSource/logger_test.go:"},
+		{"Invalid", "invalid", "/internal/logger_test.go:"},
 	}
 
 	for _, tt := range tests {
@@ -354,9 +354,9 @@ func TestGetTimeFormat(t *testing.T) {
 		expected string
 	}{
 		{"Local short", "h", "2006-01-02 15:04:05"},
-		{"Local long", "H", "2006-01-02 15:04:05.999999"},
+		{"Local long", "H", "2006-01-02 15:04:05.000000"},
 		{"UTC short", "u", "2006-01-02 15:04:05"},
-		{"UTC long", "U", "2006-01-02 15:04:05.999999"},
+		{"UTC long", "U", "2006-01-02 15:04:05.000000"},
 		{"RFC3339", "t", time.RFC3339},
 		{"RFC3339Nano", "T", time.RFC3339Nano},
 		{"Custom", "2006", "2006"},
