@@ -1,5 +1,8 @@
 @next(
-	go_imports="*github.com/gopherd/core/types.Duration,*redis:github.com/go-redis/redis/v8.Client",
+	go_imports=`
+		*github.com/gopherd/core/types.Duration,
+		*redis:github.com/go-redis/redis/v8.Client,
+	`,
 )
 package redis;
 
@@ -24,7 +27,7 @@ struct Options {
 	string password;
 
 	// Database to be selected after connecting to the server.
-	@next(pascal_case="DB")
+	@next(tokens="DB")
 	int db;
 
 	// Maximum number of retries before giving up.
@@ -77,11 +80,9 @@ struct Options {
 	Duration idleCheckFrequency;
 }
 
-@next(go_alias="*redis.Client") 
-interface RedisClient {}
-
 // Component represents a Redis client component API.
 interface Component {
 	// Client returns the Redis client.
-	Client() RedisClient;
+	@next(go_alias="*redis.Client") 
+	Client() any;
 }

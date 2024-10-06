@@ -51,17 +51,17 @@ type Options struct {
 	LevelFormat string
 	// HTTPPath specifies the root HTTP path to get/set log level.
 	// If empty, the HTTP handler is not registered.
-	// 
+	//
 	// - get log level: GET {HTTPPath}/get
 	// - set log level: POST {HTTPPath}/set?level={level} where level is one of DEBUG, INFO, WARN, ERROR or a number
 	HTTPPath string
 }
 
 func (x *Options) OnLoaded() {
-    op.SetOr(&x.Output, "stderr")
-    op.SetOr(&x.TimeFormat, "H")
-    op.SetOr(&x.SourceFormat, "S")
-    op.SetOr(&x.LevelFormat, "L")
+	op.SetOr(&x.Output, "stderr")
+	op.SetOr(&x.TimeFormat, "H")
+	op.SetOr(&x.SourceFormat, "S")
+	op.SetOr(&x.LevelFormat, "L")
 }
 
 // Component represents the logger component API.

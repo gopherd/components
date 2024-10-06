@@ -13,7 +13,7 @@ var _ {{this.Package.Name}}.Component = (*{{$objName}})(nil)
 {{range .Methods.List}}
 // {{.Name}} implements {{this.Package.Name}}.Component.{{.Name}}.
 func (c *{{$objName}}) {{render "interface.method:name" .}}({{next .Params}}){{next .Result}} {
-    return {{with .Result.Type}}{{render "type:zero" .}}{{end}}{{if .Annotations.next.error}}{{if .Result.Type}}, {{end}}nil{{end}}
+	panic("TODO: not implemented")
 }
 {{end -}}
 {{end -}}
@@ -25,8 +25,8 @@ package {{this.Package.Name}}
 
 import (
 	"context"
-    {{render "imports:declarations" this.Package.Imports | align}}
-    {{"github.com/gopherd/core/component" | quote | indent}}
+	{{render "imports:declarations" this.Package.Imports | align}}
+	{{"github.com/gopherd/core/component" | quote | indent}}
 
 	"github.com/gopherd/components/{{this.Package.Name}}"
 )
@@ -44,25 +44,25 @@ type {{$objName}} struct {
 
 // Init implements component.Component.Init.
 func (c *{{$objName}}) Init(ctx context.Context) error {
-    // TODO: implement the Init method or remove it if not needed
+	// TODO: implement the Init method or remove it if not needed
 	return nil
 }
 
 // Uninit implements component.Component.Uninit.
 func (c *{{$objName}}) Uninit(ctx context.Context) error {
-    // TODO: implement the Uninit method or remove it if not needed
-    return nil
+	// TODO: implement the Uninit method or remove it if not needed
+	return nil
 }
 
 // Start implements component.Component.Start.
 func (c *{{$objName}}) Start(ctx context.Context) error {
-    // TODO: implement the Start method or remove it if not needed
-    return nil
+	// TODO: implement the Start method or remove it if not needed
+	return nil
 }
 
 // Shutdown implements component.Component.Shutdown.
 func (c *{{$objName}}) Shutdown(ctx context.Context) error {
-    // TODO: implement the Shutdown method or remove it if not needed
-    return nil
+	// TODO: implement the Shutdown method or remove it if not needed
+	return nil
 }
 {{render "go/interfaces" this.Package.Decls.Interfaces}}

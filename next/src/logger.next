@@ -18,7 +18,7 @@ struct Options {
 	Level level;
 
 	// JSON determines whether to output logs in JSON format.
-	@next(pascal_case="JSON")
+	@next(tokens="JSON")
 	bool json;
 
 	// TimeFormat specifies the time format for log entries.
@@ -58,7 +58,7 @@ struct Options {
 	//
 	// - get log level: GET {HTTPPath}/get
 	// - set log level: POST {HTTPPath}/set?level={level} where level is one of DEBUG, INFO, WARN, ERROR or a number
-	@next(pascal_case="HTTPPath")
+	@next(tokens="HTTP Path")
 	string httpPath;
 }
 

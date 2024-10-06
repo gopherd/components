@@ -19,19 +19,19 @@ const Name = "github.com/gopherd/components/{{this.Package.Name}}";
 {{- define "go/struct" -}}
 {{super .}}
 func (x *{{next .Type}}) OnLoaded() {
-    {{- range .Fields.List}}
-    {{- if .Annotations.next.Has "default"}}
-    op.SetOr(&x.{{render "struct.field:name" .}}, {{.Annotations.next.default | make}})
-    {{- end}}
-    {{- end}}
+	{{- range .Fields.List}}
+	{{- if .Annotations.next.Has "default"}}
+	op.SetOr(&x.{{render "struct.field:name" .}}, {{.Annotations.next.default | make}})
+	{{- end}}
+	{{- end}}
 }
 {{end -}}
 
 {{- define "go/interface.methods"}}
 {{- with .Decl.Annotations.component.extends}}
-    {{- range (. | split "," | map trim)}}
-    {{- println}}{{.}}
-    {{- end}}
+	{{- range (. | split "," | map trim)}}
+	{{- println}}{{.}}
+	{{- end}}
 {{end -}}
 {{super . -}}
 {{end -}}

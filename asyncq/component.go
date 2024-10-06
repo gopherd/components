@@ -21,5 +21,5 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
-    op.SetOr(&x.MaxSize, 1048576)
+	op.SetOr(&x.MaxSize, 1048576)
 }

@@ -1,4 +1,4 @@
-@next(pascal_case="PIDFile")
+@next(tokens="PID File")
 package pidfile;
 
 struct Options {

@@ -1,5 +1,5 @@
 @next(
-	pascal_case="GinServer",
+	tokens="Gin Server",
 	go_imports="*github.com/gin-gonic/gin.Engine,*github.com/gopherd/components/httpserver.Component"
 )
 package ginserver;

@@ -1,4 +1,4 @@
-@next(pascal_case="TCPServer")
+@next(tokens="TCP Server")
 package tcpserver;
 
 // Options represents the configuration options for the TCP server.

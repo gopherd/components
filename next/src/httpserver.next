@@ -1,4 +1,4 @@
-@next(pascal_case="HTTPServer", tokens="HTTP Server", go_imports="*net/http.Handler")
+@next(tokens="HTTP Server", go_imports="*net/http.Handler")
 package httpserver;
 
 struct Options {

@@ -1,5 +1,5 @@
 @next(
-	pascal_case="TimeFlow",
+	tokens="TimeFlow",
 	go_imports="*time.Time, *time.Duration, *github.com/gopherd/core/types.Duration",
 )
 package timeflow;
@@ -13,7 +13,7 @@ interface Time {}
 struct Options {
 	@next(go_alias="types.Duration")
 	any initialOffset;
-	@next(pascal_case="HTTPPath")
+	@next(tokens="HTTP Path")
 	string httpPath;
 }
 
