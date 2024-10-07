@@ -27,6 +27,12 @@ func (x *{{next .Type}}) OnLoaded() {
 }
 {{end -}}
 
+{{- define "go/interface" -}}
+{{- if .Methods.List}}
+	{{- super .}}
+{{- end -}}
+{{- end -}}
+
 {{- define "go/interface.methods"}}
 {{- with .Decl.Annotations.component.extends}}
 	{{- range (. | split "," | map trim)}}

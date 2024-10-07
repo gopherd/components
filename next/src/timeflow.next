@@ -1,6 +1,6 @@
 @next(
-	tokens="TimeFlow",
-	go_imports="*time.Time, *time.Duration, *github.com/gopherd/core/types.Duration",
+	tokens="Time Flow",
+	go_imports="*time.Time, *github.com/gopherd/core/types.Duration",
 )
 package timeflow;
 
@@ -19,6 +19,9 @@ struct Options {
 
 // Component represents a time flow management component.
 // It provides methods to manage time offsets and adjustments.
+@next(
+	prompt="Implement a time flow management component.",
+)
 interface Component {
 	// Offset returns the current time offset.
 	offset() Duration;

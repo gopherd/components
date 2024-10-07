@@ -7,7 +7,7 @@
 {{- end -}}
 
 {{- define "go/interface"}}
-{{if eq "Component" .Name -}}
+{{- if and (eq "Component" .Name) (.Methods.List)}}
 // Ensure *{{meta._objName}} implements {{this.Package.Name}}.Component interface.
 var _ {{this.Package.Name}}.Component = (*{{meta._objName}})(nil)
 {{range .Methods.List}}
@@ -28,7 +28,7 @@ import (
 
 	"github.com/gopherd/components/{{this.Package.Name}}"
 )
-
+{{render "imports:unused" this.Package.Imports | linespace}}
 func init() {
 	component.Register({{this.Package.Name}}.Name, func() component.Component {
 		return &{{meta._objName}}{}

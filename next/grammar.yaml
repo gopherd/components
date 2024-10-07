@@ -1,0 +1,8 @@
+interface:
+  annotations:
+    - name: component
+      description: The component that the interface is associated with.
+      parameters:
+        - name: extends
+          types: [string]
+          description: The name of the component that the interface extends.

@@ -7,7 +7,6 @@ import "github.com/gopherd/core/types"
 import "github.com/gopherd/core/op"
 
 var _ = (*time.Time)(nil)
-var _ = (*time.Duration)(nil)
 var _ = (*types.Duration)(nil)
 var _ = op.SetOr[any]
 

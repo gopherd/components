@@ -1,3 +1,7 @@
+strict: false
+
+grammar: ./next/grammar.yaml
+
 output:
   go: ./
 
