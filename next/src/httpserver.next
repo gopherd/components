@@ -17,5 +17,5 @@ interface Component {
 
 	// HandleFunc registers the handler function for the given pattern and methods.
 	// If method is empty, it registers the handler for all methods.
-	handleFunc(vector<string> methods, string path , @next(go_alias="http.HandlerFunc") any HandlerFunc);
+	handleFunc(vector<string> methods, string path , @next(go_alias="http.HandlerFunc") any handler);
 }
