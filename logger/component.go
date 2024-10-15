@@ -6,7 +6,7 @@ import "log/slog"
 import "github.com/gopherd/core/op"
 
 var _ = (*slog.Level)(nil)
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the logger component name.
 const Name = "github.com/gopherd/components/logger";
@@ -58,10 +58,10 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
-	op.SetOr(&x.Output, "stderr")
-	op.SetOr(&x.TimeFormat, "H")
-	op.SetOr(&x.SourceFormat, "S")
-	op.SetOr(&x.LevelFormat, "L")
+	op.SetDefault(&x.Output, "stderr")
+	op.SetDefault(&x.TimeFormat, "H")
+	op.SetDefault(&x.SourceFormat, "S")
+	op.SetDefault(&x.LevelFormat, "L")
 }
 
 // Component represents the logger component API.

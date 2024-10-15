@@ -8,7 +8,7 @@ import "github.com/gopherd/core/op"
 
 var _ = (*time.Time)(nil)
 var _ = (*types.Duration)(nil)
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the timeflow component name.
 const Name = "github.com/gopherd/components/timeflow";

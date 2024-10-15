@@ -6,7 +6,7 @@ import "net/http"
 import "github.com/gopherd/core/op"
 
 var _ = (*http.Handler)(nil)
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the httpserver component name.
 const Name = "github.com/gopherd/components/httpserver";

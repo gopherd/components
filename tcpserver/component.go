@@ -4,7 +4,7 @@ package tcpserver
 
 import "github.com/gopherd/core/op"
 
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the tcpserver component name.
 const Name = "github.com/gopherd/components/tcpserver";
@@ -24,8 +24,8 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
-	op.SetOr(&x.Network, "tcp")
-	op.SetOr(&x.KeepAlive, 300)
-	op.SetOr(&x.ReadTimeout, 10)
-	op.SetOr(&x.WriteTimeout, 10)
+	op.SetDefault(&x.Network, "tcp")
+	op.SetDefault(&x.KeepAlive, 300)
+	op.SetDefault(&x.ReadTimeout, 10)
+	op.SetDefault(&x.WriteTimeout, 10)
 }

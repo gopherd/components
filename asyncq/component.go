@@ -4,7 +4,7 @@ package asyncq
 
 import "github.com/gopherd/core/op"
 
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the asyncq component name.
 const Name = "github.com/gopherd/components/asyncq";
@@ -21,5 +21,5 @@ type Options struct {
 }
 
 func (x *Options) OnLoaded() {
-	op.SetOr(&x.MaxSize, 1048576)
+	op.SetDefault(&x.MaxSize, 1048576)
 }

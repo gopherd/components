@@ -6,7 +6,7 @@ import "gorm.io/gorm"
 import "github.com/gopherd/core/op"
 
 var _ = (*gorm.DB)(nil)
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the db component name.
 const Name = "github.com/gopherd/components/db";

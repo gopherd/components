@@ -8,7 +8,7 @@ import "github.com/gopherd/core/op"
 
 var _ = (*echo.Echo)(nil)
 var _ = (*httpserver.Component)(nil)
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the echoserver component name.
 const Name = "github.com/gopherd/components/echoserver";

@@ -4,7 +4,7 @@ package syncq
 
 import "github.com/gopherd/core/op"
 
-var _ = op.SetOr[any]
+var _ = op.SetDefault[any]
 
 // Name represents the syncq component name.
 const Name = "github.com/gopherd/components/syncq";
