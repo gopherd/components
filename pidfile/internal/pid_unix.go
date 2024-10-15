@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func pidExist(pid int) bool {
+func isProcessExist(pid int) bool {
 	_, err := os.Stat(filepath.Join("/proc", strconv.Itoa(pid)))
 	return err == nil
 }

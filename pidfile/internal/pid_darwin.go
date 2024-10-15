@@ -7,6 +7,6 @@ import (
 	"syscall"
 )
 
-func pidExist(pid int) bool {
+func isProcessExist(pid int) bool {
 	return syscall.Kill(pid, 0) == nil
 }

@@ -12,6 +12,9 @@ import (
 	"github.com/gopherd/core/component"
 )
 
+const readonlyPerm = 0400
+const writablePerm = 0600
+
 func init() {
 	component.Register(pidfile.Name, func() component.Component {
 		return &PIDFileComponent{}
@@ -43,31 +46,41 @@ func (c *PIDFileComponent) createFile() error {
 			return fmt.Errorf("PidFile: %v", err)
 		}
 	}
-	if content, err := os.ReadFile(c.filename); err == nil {
-		pidStr := strings.TrimSpace(string(content))
-		if pidStr == "" {
-			return nil
-		}
-		pid, err := strconv.Atoi(pidStr)
-		if err != nil {
-			return nil
-		}
-		if pidExist(pid) {
-			return fmt.Errorf("pid file found, ensoure %s is not running", os.Args[0])
-		}
+	if err := c.checkFile(); err != nil {
+		return err
 	}
-	f, err := os.OpenFile(c.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(c.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, writablePerm)
 	if err != nil {
 		return err
 	}
 	_, err = fmt.Fprintf(f, "%d", os.Getpid())
 	if err == nil {
-		err = f.Chmod(0444)
+		err = f.Chmod(readonlyPerm)
 	}
 	if err1 := f.Close(); err1 != nil && err == nil {
 		err = err1
 	}
 	return err
+}
+
+func (c *PIDFileComponent) checkFile() error {
+	content, err := os.ReadFile(c.filename)
+	if err != nil {
+		return nil
+	}
+	pidStr := strings.TrimSpace(string(content))
+	if pidStr == "" {
+		return nil
+	}
+	pid, err := strconv.Atoi(pidStr)
+	if err != nil {
+		return nil
+	}
+	if isProcessExist(pid) {
+		return fmt.Errorf("pid file found, ensoure %s is not running", os.Args[0])
+	}
+	// Ensure the pid file is writable.
+	return os.Chmod(c.filename, writablePerm)
 }
 
 func (c *PIDFileComponent) Uninit(ctx context.Context) error {
@@ -77,7 +90,7 @@ func (c *PIDFileComponent) Uninit(ctx context.Context) error {
 // removeFile removes the pid file.
 func (c *PIDFileComponent) removeFile() error {
 	if c.filename != "" {
-		if err := os.Chmod(c.filename, 0644); err != nil {
+		if err := os.Chmod(c.filename, writablePerm); err != nil {
 			return err
 		}
 		return os.Remove(c.filename)
