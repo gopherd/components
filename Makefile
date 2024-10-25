@@ -1,11 +1,6 @@
 build: autogen
 	go build ./...
 
-autogen: dep-eventer
+autogen:
 	go generate ./...
-
-.PHONY: dep-eventer
-dep-eventer:
-ifeq (, $(shell which eventer))
-	go install github.com/gopherd/tools/cmd/eventer@latest
-endif
+	next build ./components.nextproj

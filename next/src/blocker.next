@@ -1,3 +1,6 @@
 package blocker;
 
-struct Options {}
+struct Options {
+	@next(tokens="HTTP Path")
+	@optional string httpPath;
+}
