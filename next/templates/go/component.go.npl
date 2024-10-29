@@ -20,7 +20,9 @@ const Name = "github.com/gopherd/components/{{this.Package.Name}}";
 {{super .}}
 func (x *{{next .Type}}) OnLoaded() {
 	{{- range .Fields.List}}
-	{{- if .Annotations.next.Has "default"}}
+	{{- if .Annotations.next.Has "go_default"}}
+	op.SetDefault(&x.{{render "struct.field:name" .}}, {{.Annotations.next.go_default}})
+	{{- else if .Annotations.next.Has "default"}}
 	op.SetDefault(&x.{{render "struct.field:name" .}}, {{.Annotations.next.default | make}})
 	{{- end}}
 	{{- end}}
