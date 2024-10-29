@@ -3,18 +3,18 @@
 package timeflow
 
 import "time"
-import "github.com/gopherd/core/types"
+import "github.com/gopherd/core/typing"
 import "github.com/gopherd/core/op"
 
 var _ = (*time.Time)(nil)
-var _ = (*types.Duration)(nil)
+var _ = (*typing.Duration)(nil)
 var _ = op.SetDefault[any]
 
 // Name represents the timeflow component name.
 const Name = "github.com/gopherd/components/timeflow";
 
 type Options struct {
-	InitialOffset types.Duration
+	InitialOffset typing.Duration
 	HTTPPath string
 }
 

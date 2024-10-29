@@ -1,12 +1,12 @@
 @next(
 	go_imports=`
-		*github.com/gopherd/core/types.Duration,
+		*github.com/gopherd/core/typing.Duration,
 		*redis:github.com/go-redis/redis/v8.Client,
 	`,
 )
 package redis;
 
-@next(go_alias="types.Duration") 
+@next(go_alias="typing.Duration") 
 interface Duration {}
 
 struct Options {

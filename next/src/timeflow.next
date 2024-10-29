@@ -1,6 +1,6 @@
 @next(
 	tokens="Time Flow",
-	go_imports="*time.Time, *github.com/gopherd/core/types.Duration",
+	go_imports="*time.Time, *github.com/gopherd/core/typing.Duration",
 )
 package timeflow;
 
@@ -11,7 +11,7 @@ interface Duration {}
 interface Time {}
 
 struct Options {
-	@next(go_alias="types.Duration")
+	@next(go_alias="typing.Duration")
 	any initialOffset;
 	@next(tokens="HTTP Path")
 	string httpPath;

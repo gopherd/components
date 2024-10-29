@@ -13,7 +13,7 @@ import (
 
 	"github.com/gopherd/core/component"
 	"github.com/gopherd/core/op"
-	"github.com/gopherd/core/types"
+	"github.com/gopherd/core/typing"
 
 	"github.com/gopherd/components/logger"
 )
@@ -37,7 +37,7 @@ func mustNew(t *testing.T, name string, options logger.Options) component.Compon
 	}
 	if err := comp.Setup(mockEntity{}, &component.Config{
 		Name:    name,
-		Options: types.NewRawObject(op.MustResult(json.Marshal(options))),
+		Options: typing.NewRawObject(op.MustResult(json.Marshal(options))),
 	}, false); err != nil {
 		t.Fatalf("Failed to setup component %q: %v", name, err)
 	}
