@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gopherd/core/component"
+	"github.com/gopherd/core/typing"
 
 	"github.com/gopherd/components/httpserver"
 	"github.com/gopherd/components/timeflow"
@@ -75,12 +76,12 @@ func (c *TimeFlowComponent) handleSetOffset(w http.ResponseWriter, r *http.Reque
 }
 
 // Offset returns the current time offset.
-func (c *TimeFlowComponent) Offset() time.Duration {
-	return time.Duration(c.offset.Load())
+func (c *TimeFlowComponent) Offset() typing.Duration {
+	return typing.Duration(c.offset.Load())
 }
 
 // SetOffset sets a new time offset.
-func (c *TimeFlowComponent) SetOffset(duration time.Duration) {
+func (c *TimeFlowComponent) SetOffset(duration typing.Duration) {
 	c.offset.Store(int64(duration))
 }
 

@@ -2,6 +2,9 @@ strict: false
 
 grammar: ./next/grammar.yaml
 
+mapping:
+  go.duration: typing.Duration
+
 output:
   go: ./
 

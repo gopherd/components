@@ -4,15 +4,8 @@
 )
 package timeflow;
 
-@next(go_alias="time.Duration") 
-interface Duration {}
-
-@next(go_alias="time.Time") 
-interface Time {}
-
 struct Options {
-	@next(go_alias="typing.Duration")
-	any initialOffset;
+	duration initialOffset;
 	@next(tokens="HTTP Path")
 	string httpPath;
 }
@@ -24,14 +17,14 @@ struct Options {
 )
 interface Component {
 	// Offset returns the current time offset.
-	offset() Duration;
+	offset() duration;
 
 	// SetOffset sets a new time offset.
-	setOffset(Duration duration);
+	setOffset(duration offset);
 
 	// Now returns the current time adjusted by the component's offset.
-	now() Time;
+	now() time;
 
 	// Adjust applies the component's offset to the given time.
-	adjust(Time t) Time;
+	adjust(time t) time;
 }
